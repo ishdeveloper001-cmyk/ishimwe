@@ -1,0 +1,232 @@
+// Layout styles
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: $light-bg-secondary;
+  
+  .dark-mode & {
+    background-color: $dark-bg-secondary;
+  }
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left $transition-normal;
+  
+  @include mobile {
+    margin-left: 0 !important;
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding: $spacing-lg;
+  margin-top: $header-height;
+  margin-left: $sidebar-width;
+  transition: margin-left $transition-normal, margin-top $transition-normal;
+  
+  @include tablet {
+    margin-left: $sidebar-collapsed-width;
+    padding: $spacing-md;
+  }
+  
+  @include mobile {
+    margin-left: 0;
+    margin-top: calc(#{$header-height} + 56px);
+    padding: $spacing-md;
+  }
+  
+  &.sidebar-collapsed {
+    margin-left: $sidebar-collapsed-width;
+    
+    @include mobile {
+      margin-left: 0;
+    }
+  }
+}
+
+// Page container
+.page-container {
+  @include flex-column;
+  gap: $spacing-lg;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  h1 {
+    margin-bottom: 0;
+  }
+  
+  &-actions {
+    @include flex-row;
+    gap: $spacing-sm;
+  }
+}
+
+// Grid layouts
+.grid-container {
+  display: grid;
+  gap: $spacing-lg;
+  
+  &.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    
+    @include tablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  &.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+    
+    @include tablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Dashboard cards
+.dashboard-card {
+  @include card;
+  @include flex-column;
+  gap: $spacing-md;
+  
+  &-header {
+    @include flex-between;
+    
+    h3 {
+      margin-bottom: 0;
+    }
+  }
+  
+  &-content {
+    flex: 1;
+  }
+  
+  &-footer {
+    @include flex-between;
+    padding-top: $spacing-md;
+    border-top: 1px solid $light-border-color;
+    
+    .dark-mode & {
+      border-color: $dark-border-color;
+    }
+  }
+}
+
+// Stat cards
+.stat-card {
+  @include card;
+  @include flex-column;
+  align-items: center;
+  text-align: center;
+  
+  .stat-icon {
+    @include flex-center;
+    width: 60px;
+    height: 60px;
+    border-radius: $border-radius-round;
+    background-color: rgba($primary-color, 0.1);
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+    
+    .dark-mode & {
+      background-color: rgba($primary-color, 0.2);
+    }
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $primary-color;
+    margin-bottom: $spacing-xs;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: $light-text-secondary;
+    
+    .dark-mode & {
+      color: $dark-text-secondary;
+    }
+  }
+}
+
+// Content sections
+.section {
+  margin-bottom: $spacing-xl;
+  
+  &-header {
+    @include flex-between;
+    margin-bottom: $spacing-lg;
+    
+    h2 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Responsive table wrapper
+.table-responsive {
+  overflow-x: auto;
+  @include custom-scrollbar;
+}
+
+// Form sections
+.form-section {
+  margin-bottom: $spacing-xl;
+  
+  &-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 2px solid $primary-color;
+    
+    .dark-mode & {
+      border-color: lighten($primary-color, 10%);
+    }
+  }
+}
+
+// Modal content
+.modal-content {
+  padding: $spacing-lg;
+  
+  @include mobile {
+    padding: $spacing-md;
+  }
+}

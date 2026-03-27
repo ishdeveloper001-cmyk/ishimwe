@@ -1,0 +1,555 @@
+// Component styles
+
+// Header
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $header-height;
+  background-color: $light-bg-primary;
+  border-bottom: 1px solid $light-border-color;
+  z-index: $z-index-fixed;
+  @include flex-between;
+  padding: 0 $spacing-lg;
+  transition: background-color $transition-normal, border-color $transition-normal;
+  
+  .dark-mode & {
+    background-color: $dark-bg-primary;
+    border-color: $dark-border-color;
+  }
+  
+  @include mobile {
+    padding: 0 $spacing-md;
+  }
+  
+  &-left {
+    @include flex-row;
+    align-items: center;
+    gap: $spacing-md;
+  }
+  
+  &-logo {
+    @include flex-row;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $primary-color;
+    
+    svg {
+      font-size: 2rem;
+    }
+  }
+  
+  &-menu-btn {
+    @include flex-center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: $border-radius-md;
+    color: $light-text-primary;
+    transition: background-color $transition-fast;
+    
+    .dark-mode & {
+      color: $dark-text-primary;
+    }
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.1);
+    }
+    
+    @include desktop {
+      display: none;
+    }
+  }
+  
+  &-right {
+    @include flex-row;
+    align-items: center;
+    gap: $spacing-md;
+  }
+  
+  &-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: $light-text-primary;
+    margin-left: $spacing-lg;
+    
+    .dark-mode & {
+      color: $dark-text-primary;
+    }
+    
+    @include mobile {
+      display: none;
+    }
+  }
+}
+
+// Sidebar
+.sidebar {
+  position: fixed;
+  top: $header-height;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  background-color: $light-bg-primary;
+  border-right: 1px solid $light-border-color;
+  z-index: $z-index-sticky;
+  transition: width $transition-normal, background-color $transition-normal, border-color $transition-normal;
+  overflow-y: auto;
+  @include custom-scrollbar;
+  
+  .dark-mode & {
+    background-color: $dark-bg-primary;
+    border-color: $dark-border-color;
+  }
+  
+  @include tablet {
+    width: $sidebar-collapsed-width;
+  }
+  
+  @include mobile {
+    transform: translateX(-100%);
+    width: $sidebar-width;
+    
+    &.open {
+      transform: translateX(0);
+    }
+  }
+  
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+    
+    .sidebar-nav-text {
+      opacity: 0;
+      width: 0;
+    }
+  }
+  
+  &-nav {
+    padding: $spacing-md;
+    
+    &-item {
+      @include flex-row;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+      color: $light-text-secondary;
+      cursor: pointer;
+      transition: all $transition-fast;
+      margin-bottom: $spacing-xs;
+      text-decoration: none;
+      
+      .dark-mode & {
+        color: $dark-text-secondary;
+      }
+      
+      &:hover {
+        background-color: rgba($primary-color, 0.08);
+        color: $primary-color;
+        
+        .dark-mode & {
+          background-color: rgba($primary-color, 0.15);
+        }
+      }
+      
+      &.active {
+        background-color: rgba($primary-color, 0.12);
+        color: $primary-color;
+        font-weight: 500;
+        
+        .dark-mode & {
+          background-color: rgba($primary-color, 0.2);
+        }
+      }
+      
+      svg {
+        min-width: 24px;
+        font-size: 1.5rem;
+      }
+    }
+    
+    &-text {
+      white-space: nowrap;
+      transition: opacity $transition-normal;
+    }
+  }
+}
+
+// Cards
+.card {
+  @include card;
+  
+  &-header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $light-border-color;
+    
+    .dark-mode & {
+      border-color: $dark-border-color;
+    }
+    
+    h3 {
+      margin-bottom: 0;
+    }
+  }
+  
+  &-body {
+    @include flex-column;
+    gap: $spacing-md;
+  }
+  
+  &-footer {
+    @include flex-between;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid $light-border-color;
+    
+    .dark-mode & {
+      border-color: $dark-border-color;
+    }
+  }
+}
+
+// Forms
+.form-group {
+  margin-bottom: $spacing-md;
+  
+  label {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-weight: 500;
+    color: $light-text-primary;
+    
+    .dark-mode & {
+      color: $dark-text-primary;
+    }
+  }
+  
+  input, select, textarea {
+    @include input-base;
+  }
+  
+  .error-message {
+    color: $error-color;
+    font-size: 0.75rem;
+    margin-top: $spacing-xs;
+  }
+}
+
+.form-actions {
+  @include flex-row;
+  gap: $spacing-md;
+  justify-content: flex-end;
+  margin-top: $spacing-lg;
+}
+
+// Image preview
+.image-preview {
+  @include flex-center;
+  width: 150px;
+  height: 150px;
+  border: 2px dashed $light-border-color;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  background-color: $light-bg-secondary;
+  position: relative;
+  
+  .dark-mode & {
+    border-color: $dark-border-color;
+    background-color: $dark-bg-secondary;
+  }
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  &-placeholder {
+    @include flex-column;
+    align-items: center;
+    gap: $spacing-sm;
+    color: $light-text-secondary;
+    text-align: center;
+    padding: $spacing-md;
+    
+    .dark-mode & {
+      color: $dark-text-secondary;
+    }
+    
+    svg {
+      font-size: 2rem;
+    }
+  }
+  
+  &-remove {
+    position: absolute;
+    top: $spacing-xs;
+    right: $spacing-xs;
+    width: 24px;
+    height: 24px;
+    border-radius: $border-radius-round;
+    background-color: $error-color;
+    color: white;
+    border: none;
+    cursor: pointer;
+    @include flex-center;
+    
+    &:hover {
+      background-color: darken($error-color, 10%);
+    }
+  }
+}
+
+// Status badges
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  
+  &.available {
+    background-color: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+  
+  &.busy {
+    background-color: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+  
+  &.scheduled {
+    background-color: rgba($info-color, 0.1);
+    color: $info-color;
+  }
+  
+  &.completed {
+    background-color: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+  
+  &.cancelled {
+    background-color: rgba($error-color, 0.1);
+    color: $error-color;
+  }
+}
+
+// Rating stars
+.rating {
+  @include flex-row;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &-stars {
+    color: $warning-color;
+  }
+  
+  &-value {
+    font-weight: 600;
+    margin-left: $spacing-xs;
+  }
+}
+
+// Empty state
+.empty-state {
+  @include flex-column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl;
+  text-align: center;
+  color: $light-text-secondary;
+  
+  .dark-mode & {
+    color: $dark-text-secondary;
+  }
+  
+  svg {
+    font-size: 4rem;
+    margin-bottom: $spacing-md;
+    opacity: 0.5;
+  }
+  
+  h3 {
+    margin-bottom: $spacing-sm;
+  }
+}
+
+// Loading spinner
+.loading-spinner {
+  @include flex-center;
+  padding: $spacing-xxl;
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba($primary-color, 0.2);
+    border-top-color: $primary-color;
+    border-radius: $border-radius-round;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Doctor profile
+.doctor-profile {
+  @include flex-column;
+  gap: $spacing-lg;
+  
+  &-header {
+    @include flex-row;
+    gap: $spacing-lg;
+    align-items: center;
+    
+    @include mobile {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  
+  &-image {
+    width: 120px;
+    height: 120px;
+    border-radius: $border-radius-round;
+    overflow: hidden;
+    background-color: $light-bg-secondary;
+    @include flex-center;
+    
+    .dark-mode & {
+      background-color: $dark-bg-secondary;
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    svg {
+      font-size: 3rem;
+      color: $light-text-secondary;
+      
+      .dark-mode & {
+        color: $dark-text-secondary;
+      }
+    }
+  }
+  
+  &-info {
+    flex: 1;
+    
+    h2 {
+      margin-bottom: $spacing-xs;
+    }
+    
+    .specialization {
+      color: $primary-color;
+      font-weight: 500;
+      margin-bottom: $spacing-sm;
+    }
+  }
+  
+  &-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+    
+    .stat {
+      text-align: center;
+      padding: $spacing-md;
+      background-color: $light-bg-secondary;
+      border-radius: $border-radius-md;
+      
+      .dark-mode & {
+        background-color: $dark-bg-secondary;
+      }
+      
+      .value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $primary-color;
+      }
+      
+      .label {
+        font-size: 0.875rem;
+        color: $light-text-secondary;
+        
+        .dark-mode & {
+          color: $dark-text-secondary;
+        }
+      }
+    }
+  }
+  
+  &-details {
+    @include flex-column;
+    gap: $spacing-md;
+    
+    h4 {
+      margin-bottom: $spacing-sm;
+    }
+    
+    .detail-item {
+      @include flex-row;
+      gap: $spacing-md;
+      
+      .label {
+        font-weight: 500;
+        min-width: 120px;
+        color: $light-text-secondary;
+        
+        .dark-mode & {
+          color: $dark-text-secondary;
+        }
+      }
+      
+      .value {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Chart container
+.chart-container {
+  width: 100%;
+  height: 300px;
+  @include flex-center;
+  
+  @include mobile {
+    height: 250px;
+  }
+}
+
+// Mobile overlay
+.mobile-overlay {
+  display: none;
+  
+  @include mobile {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: $z-index-sticky - 1;
+  }
+}

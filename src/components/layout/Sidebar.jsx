@@ -1,0 +1,181 @@
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import {
+  Dashboard,
+  LocalHospital,
+  People,
+  CalendarMonth,
+  BarChart,
+  ChevronLeft,
+  ChevronRight,
+} from '@mui/icons-material';
+
+const drawerWidth = 260;
+const collapsedWidth = 72;
+
+const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const menuItems = [
+    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+    { text: 'Doctors', icon: <LocalHospital />, path: '/doctors', roles: ['admin', 'doctor'] },
+    { text: 'Patients', icon: <People />, path: '/patients', roles: ['admin', 'doctor'] },
+    { text: 'Appointments', icon: <CalendarMonth />, path: '/appointments', roles: ['admin', 'doctor', 'patient'] },
+    { text: 'Analytics', icon: <BarChart />, path: '/analytics', roles: ['admin'] },
+  ];
+
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    if (isMobile) {
+      onClose();
+    }
+  };
+
+  const drawerContent = (
+    <Box sx={{ overflow: 'auto', pt: 1 }}>
+      <List>
+        {menuItems
+          .filter((item) => !item.roles || item.roles.includes(user?.role))
+          .map((item) => (
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                onClick={() => handleNavigation(item.path)}
+                selected={isActive(item.path)}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: collapsed ? 'center' : 'initial',
+                  px: 2.5,
+                  mx: 1,
+                  borderRadius: 2,
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    '& .MuiListItemIcon-root': {
+                      color: 'white',
+                    },
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                  },
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: collapsed ? 0 : 2,
+                    justifyContent: 'center',
+                    color: isActive(item.path) ? 'white' : 'text.secondary',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!collapsed && (
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: isActive(item.path) ? 600 : 400,
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </ListItem>
+          ))}
+      </List>
+      
+      {!isMobile && (
+        <Box sx={{ mt: 'auto', p: 2 }}>
+          <ListItemButton
+            onClick={onToggleCollapse}
+            sx={{
+              borderRadius: 2,
+              justifyContent: 'center',
+              bgcolor: 'action.hover',
+            }}
+          >
+            {collapsed ? <ChevronRight /> : <ChevronLeft />}
+          </ListItemButton>
+        </Box>
+      )}
+    </Box>
+  );
+
+  // Mobile drawer
+  if (isMobile) {
+    return (
+      <Drawer
+        variant="temporary"
+        open={open}
+        onClose={onClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            bgcolor: 'background.default',
+            borderRight: 1,
+            borderColor: 'divider',
+            top: 8,
+            height: 'calc(100% - 16px)',
+            borderRadius: 2,
+            ml: 1,
+          },
+        }}
+      >
+        <Toolbar />
+        {drawerContent}
+      </Drawer>
+    );
+  }
+
+  // Desktop drawer
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: collapsed ? collapsedWidth : drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: collapsed ? collapsedWidth : drawerWidth,
+          boxSizing: 'border-box',
+          bgcolor: 'background.default',
+          borderRight: 1,
+          borderColor: 'divider',
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        },
+      }}
+    >
+      <Toolbar />
+      {drawerContent}
+    </Drawer>
+  );
+};
+
+export default Sidebar;

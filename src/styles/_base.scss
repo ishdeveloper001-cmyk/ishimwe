@@ -1,0 +1,175 @@
+// Base styles and resets
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  line-height: 1.6;
+  color: $light-text-primary;
+  background-color: $light-bg-secondary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  .dark-mode & {
+    color: $dark-text-primary;
+    background-color: $dark-bg-secondary;
+  }
+}
+
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: $spacing-md;
+  font-weight: 500;
+  line-height: 1.3;
+  
+  .dark-mode & {
+    color: $dark-text-primary;
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  
+  @include mobile {
+    font-size: 2rem;
+  }
+}
+
+h2 {
+  font-size: 2rem;
+  
+  @include mobile {
+    font-size: 1.75rem;
+  }
+}
+
+h3 {
+  font-size: 1.75rem;
+  
+  @include mobile {
+    font-size: 1.5rem;
+  }
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: $spacing-md;
+  
+  .dark-mode & {
+    color: $dark-text-secondary;
+  }
+}
+
+// Links
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: color $transition-fast;
+  
+  &:hover {
+    color: darken($primary-color, 15%);
+  }
+  
+  .dark-mode & {
+    color: lighten($primary-color, 15%);
+    
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// Lists
+ul, ol {
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-lg;
+}
+
+li {
+  margin-bottom: $spacing-xs;
+}
+
+// Images
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// Tables
+table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    border-bottom: 1px solid $light-border-color;
+    
+    .dark-mode & {
+      border-color: $dark-border-color;
+    }
+  }
+  
+  th {
+    font-weight: 600;
+    background-color: $light-bg-secondary;
+    
+    .dark-mode & {
+      background-color: $dark-bg-secondary;
+      color: $dark-text-primary;
+    }
+  }
+  
+  tr:hover {
+    background-color: rgba($primary-color, 0.04);
+    
+    .dark-mode & {
+      background-color: rgba($primary-color, 0.08);
+    }
+  }
+}
+
+// Selection
+::selection {
+  background-color: rgba($primary-color, 0.2);
+  color: inherit;
+}
+
+// Focus outline
+:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// Screen reader only
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
