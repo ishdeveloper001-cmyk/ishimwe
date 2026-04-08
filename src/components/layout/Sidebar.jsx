@@ -20,6 +20,7 @@ import {
   BarChart,
   ChevronLeft,
   ChevronRight,
+  Person,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -31,12 +32,13 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const menuItems = [
+const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-    { text: 'Doctors', icon: <LocalHospital />, path: '/doctors', roles: ['admin', 'doctor'] },
-    { text: 'Patients', icon: <People />, path: '/patients', roles: ['admin', 'doctor'] },
-    { text: 'Appointments', icon: <CalendarMonth />, path: '/appointments', roles: ['admin', 'doctor', 'patient'] },
+    { text: 'Doctors', icon: <People />, path: '/doctors', roles: ['admin', 'receptionist'] },
+    { text: 'Patients', icon: <LocalHospital />, path: '/patients', roles: ['admin', 'doctor'] },
+    { text: 'Appointments', icon: <CalendarMonth />, path: '/appointments' },
     { text: 'Analytics', icon: <BarChart />, path: '/analytics', roles: ['admin'] },
+    { text: 'Profile', icon: <Person />, path: '/profile' },
   ];
 
   const isActive = (path) => {

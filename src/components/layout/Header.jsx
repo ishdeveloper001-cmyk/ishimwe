@@ -90,6 +90,8 @@ const Header = ({ onMenuClick, onLogout, user }) => {
         return 'Appointment Scheduling';
       case '/analytics':
         return 'Analytics Dashboard';
+      case '/profile':
+        return 'My Profile';
       default:
         return 'Doctor Appointment System';
     }
@@ -294,7 +296,7 @@ const Header = ({ onMenuClick, onLogout, user }) => {
               {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
             </Typography>
           </Box>
-          <MenuItem>
+          <MenuItem onClick={() => navigate('/profile')}>
             <ListItemIcon>
               <Person fontSize="small" />
             </ListItemIcon>

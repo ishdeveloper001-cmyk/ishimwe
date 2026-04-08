@@ -11,6 +11,7 @@ import DoctorList from './components/doctors/DoctorList.jsx';
 import PatientList from './components/patients/PatientList.jsx';
 import AppointmentList from './components/appointments/AppointmentList.jsx';
 import Analytics from './components/analytics/Analytics.jsx';
+import Profile from './components/profile/Profile.jsx';
 
 const drawerWidth = 260;
 const collapsedWidth = 72;
@@ -88,6 +89,7 @@ function App() {
                 {user.role !== 'doctor' && <Route path="/patients" element={<PatientList user={user} />} />}
                 <Route path="/appointments" element={<AppointmentList user={user} />} />
                 {user.role === 'admin' && <Route path="/analytics" element={<Analytics />} />}
+                <Route path="/profile" element={<Profile user={user} />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Box>
