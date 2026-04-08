@@ -138,76 +138,85 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-      <DialogTitle>{isEdit ? 'Edit Doctor' : 'Add New Doctor'}</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)' } }}>
+      <DialogTitle sx={{ 
+        pb: 2,
+        background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        fontWeight: 700,
+      }}>
+        {isEdit ? 'Edit Doctor' : 'Add New Doctor'}
+      </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ pt: 2 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Personal Information</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Personal Information</Typography></Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} error={Boolean(errors.name)} helperText={errors.name} required />
+              <TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} error={Boolean(errors.name)} helperText={errors.name} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Email Address" type="email" value={formData.email} onChange={handleChange('email')} error={Boolean(errors.email)} helperText={errors.email} required />
+              <TextField fullWidth label="Email Address" type="email" value={formData.email} onChange={handleChange('email')} error={Boolean(errors.email)} helperText={errors.email} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Phone Number" value={formData.phone} onChange={handleChange('phone')} error={Boolean(errors.phone)} helperText={errors.phone} required />
+              <TextField fullWidth label="Phone Number" value={formData.phone} onChange={handleChange('phone')} error={Boolean(errors.phone)} helperText={errors.phone} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={Boolean(errors.specialization)}>
                 <InputLabel>Specialization *</InputLabel>
-                <Select value={formData.specialization} onChange={handleChange('specialization')} label="Specialization *">
+                <Select value={formData.specialization} onChange={handleChange('specialization')} label="Specialization *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
                   {specializations.map((spec) => <MenuItem key={spec} value={spec}>{spec}</MenuItem>)}
                 </Select>
                 {errors.specialization && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.specialization}</Typography>}
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Years of Experience" type="number" value={formData.experience} onChange={handleChange('experience')} error={Boolean(errors.experience)} helperText={errors.experience} inputProps={{ min: 0 }} required />
+              <TextField fullWidth label="Years of Experience" type="number" value={formData.experience} onChange={handleChange('experience')} error={Boolean(errors.experience)} helperText={errors.experience} inputProps={{ min: 0 }} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Consultation Fee ($)" type="number" value={formData.consultationFee} onChange={handleChange('consultationFee')} error={Boolean(errors.consultationFee)} helperText={errors.consultationFee} inputProps={{ min: 0 }} required />
+              <TextField fullWidth label="Consultation Fee ($)" type="number" value={formData.consultationFee} onChange={handleChange('consultationFee')} error={Boolean(errors.consultationFee)} helperText={errors.consultationFee} inputProps={{ min: 0 }} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
-                <Select value={formData.status} onChange={handleChange('status')} label="Status">
+                <Select value={formData.status} onChange={handleChange('status')} label="Status" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
                   {statusOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Rating (0-5)" type="number" value={formData.rating} onChange={handleChange('rating')} inputProps={{ min: 0, max: 5, step: 0.1 }} />
+              <TextField fullWidth label="Rating (0-5)" type="number" value={formData.rating} onChange={handleChange('rating')} inputProps={{ min: 0, max: 5, step: 0.1 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
-            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Professional Information</Typography></Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Professional Information</Typography></Grid>
             <Grid item xs={12}>
-              <TextField fullWidth label="Education" value={formData.education} onChange={handleChange('education')} error={Boolean(errors.education)} helperText={errors.education} required placeholder="e.g., Harvard Medical School - MD" />
+              <TextField fullWidth label="Education" value={formData.education} onChange={handleChange('education')} error={Boolean(errors.education)} helperText={errors.education} required placeholder="e.g., Harvard Medical School - MD" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12}>
-              <TextField fullWidth label="Work History" value={formData.workHistory} onChange={handleChange('workHistory')} multiline rows={3} placeholder="Describe previous work experience..." />
+              <TextField fullWidth label="Work History" value={formData.workHistory} onChange={handleChange('workHistory')} multiline rows={3} placeholder="Describe previous work experience..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
-            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Availability</Typography></Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Availability</Typography></Grid>
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Available Days</InputLabel>
-                <Select multiple value={formData.availability} onChange={handleAvailabilityChange} input={<OutlinedInput label="Available Days" />} renderValue={(selected) => selected.join(', ')}>
+                <Select multiple value={formData.availability} onChange={handleAvailabilityChange} input={<OutlinedInput label="Available Days" sx={{ borderRadius: 2 }} />} renderValue={(selected) => selected.join(', ')}>
                   {availabilityOptions.map((day) => <MenuItem key={day} value={day}><Checkbox checked={formData.availability.indexOf(day) > -1} /><ListItemText primary={day} /></MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Working Hours Start" type="time" value={formData.workingHours.start} onChange={handleWorkingHoursChange('start')} InputLabelProps={{ shrink: true }} />
+              <TextField fullWidth label="Working Hours Start" type="time" value={formData.workingHours.start} onChange={handleWorkingHoursChange('start')} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Working Hours End" type="time" value={formData.workingHours.end} onChange={handleWorkingHoursChange('end')} InputLabelProps={{ shrink: true }} />
+              <TextField fullWidth label="Working Hours End" type="time" value={formData.workingHours.end} onChange={handleWorkingHoursChange('end')} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
-            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Profile Image</Typography><ImageUpload value={imagePreview} onChange={handleImageChange} error={imageError} aspectRatio={1} /></Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Profile Image</Typography><ImageUpload value={imagePreview} onChange={handleImageChange} error={imageError} aspectRatio={1} /></Grid>
           </Grid>
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="outlined" color="inherit">Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained">{isEdit ? 'Update' : 'Add'} Doctor</Button>
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained" sx={{ borderRadius: 2, background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)', '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)' } }}>{isEdit ? 'Update' : 'Add'} Doctor</Button>
       </DialogActions>
     </Dialog>
   );

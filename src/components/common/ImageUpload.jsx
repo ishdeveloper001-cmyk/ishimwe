@@ -60,7 +60,7 @@ const ImageUpload = ({
 
   return (
     <Box>
-      <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+      <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: 'text.primary' }}>
         {label}
       </Typography>
       
@@ -79,10 +79,16 @@ const ImageUpload = ({
             width: '100%',
             maxWidth: 200,
             aspectRatio: aspectRatio,
-            borderRadius: 2,
+            borderRadius: 3,
             overflow: 'hidden',
             border: 2,
             borderColor: 'divider',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+              transform: 'translateY(-2px)',
+            },
           }}
         >
           <img
@@ -99,12 +105,15 @@ const ImageUpload = ({
             onClick={handleRemove}
             sx={{
               position: 'absolute',
-              top: 4,
-              right: 4,
+              top: 8,
+              right: 8,
               bgcolor: 'error.main',
               color: 'white',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              transition: 'all 0.2s ease',
               '&:hover': {
                 bgcolor: 'error.dark',
+                transform: 'scale(1.1)',
               },
             }}
           >
@@ -120,22 +129,25 @@ const ImageUpload = ({
             aspectRatio: aspectRatio,
             border: '2px dashed',
             borderColor: error ? 'error.main' : 'divider',
-            borderRadius: 2,
+            borderRadius: 3,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             bgcolor: 'action.hover',
-            transition: 'all 0.2s',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             '&:hover': {
               borderColor: 'primary.main',
               bgcolor: 'action.selected',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              transform: 'translateY(-2px)',
             },
           }}
         >
-          <ImageIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center', px: 2 }}>
+          <ImageIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1.5 }} />
+          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center', px: 2, fontWeight: 500 }}>
             Click to upload image
           </Typography>
           <Typography variant="caption" color="text.disabled" sx={{ mt: 0.5 }}>
@@ -145,7 +157,7 @@ const ImageUpload = ({
       )}
 
       {error && (
-        <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+        <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block', fontWeight: 500 }}>
           {error}
         </Typography>
       )}

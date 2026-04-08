@@ -69,18 +69,21 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
                   px: 2.5,
                   mx: 1,
                   borderRadius: 2,
+                  transition: 'all 0.2s',
                   '&.Mui-selected': {
-                    bgcolor: 'primary.main',
+                    background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
                     color: 'white',
+                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
                     '& .MuiListItemIcon-root': {
                       color: 'white',
                     },
                     '&:hover': {
-                      bgcolor: 'primary.dark',
+                      background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
                     },
                   },
                   '&:hover': {
                     bgcolor: 'action.hover',
+                    transform: 'translateX(4px)',
                   },
                 }}
               >
@@ -115,6 +118,10 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
               borderRadius: 2,
               justifyContent: 'center',
               bgcolor: 'action.hover',
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'action.selected',
+              },
             }}
           >
             {collapsed ? <ChevronRight /> : <ChevronLeft />}

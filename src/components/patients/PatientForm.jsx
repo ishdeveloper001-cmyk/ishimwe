@@ -40,26 +40,35 @@ const PatientForm = ({ open, onClose, onSave, patient }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-      <DialogTitle>{isEdit ? 'Edit Patient' : 'Add New Patient'}</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)' } }}>
+      <DialogTitle sx={{ 
+        pb: 2,
+        background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        fontWeight: 700,
+      }}>
+        {isEdit ? 'Edit Patient' : 'Add New Patient'}
+      </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ pt: 2 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Personal Information</Typography></Grid>
-            <Grid item xs={12} md={6}><TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} error={Boolean(errors.name)} helperText={errors.name} required /></Grid>
-            <Grid item xs={12} md={6}><TextField fullWidth label="Email Address" type="email" value={formData.email} onChange={handleChange('email')} error={Boolean(errors.email)} helperText={errors.email} required /></Grid>
-            <Grid item xs={12} md={6}><TextField fullWidth label="Phone Number" value={formData.phone} onChange={handleChange('phone')} error={Boolean(errors.phone)} helperText={errors.phone} required /></Grid>
-            <Grid item xs={12} md={6}><TextField fullWidth label="Date of Birth" type="date" value={formData.dateOfBirth} onChange={handleChange('dateOfBirth')} error={Boolean(errors.dateOfBirth)} helperText={errors.dateOfBirth} InputLabelProps={{ shrink: true }} required /></Grid>
-            <Grid item xs={12} md={6}><TextField fullWidth select label="Gender" value={formData.gender} onChange={handleChange('gender')} error={Boolean(errors.gender)} helperText={errors.gender} required>{genderOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>)}</TextField></Grid>
-            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Address & Contact</Typography></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Address" value={formData.address} onChange={handleChange('address')} error={Boolean(errors.address)} helperText={errors.address} required placeholder="Street, City, State, ZIP" /></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Emergency Contact" value={formData.emergencyContact} onChange={handleChange('emergencyContact')} error={Boolean(errors.emergencyContact)} helperText={errors.emergencyContact} required placeholder="Name - Phone Number" /></Grid>
-            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Medical Information</Typography></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Medical History" value={formData.medicalHistory} onChange={handleChange('medicalHistory')} multiline rows={3} placeholder="Known allergies, chronic conditions, current medications..." /></Grid>
+            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Personal Information</Typography></Grid>
+            <Grid item xs={12} md={6}><TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} error={Boolean(errors.name)} helperText={errors.name} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12} md={6}><TextField fullWidth label="Email Address" type="email" value={formData.email} onChange={handleChange('email')} error={Boolean(errors.email)} helperText={errors.email} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12} md={6}><TextField fullWidth label="Phone Number" value={formData.phone} onChange={handleChange('phone')} error={Boolean(errors.phone)} helperText={errors.phone} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12} md={6}><TextField fullWidth label="Date of Birth" type="date" value={formData.dateOfBirth} onChange={handleChange('dateOfBirth')} error={Boolean(errors.dateOfBirth)} helperText={errors.dateOfBirth} InputLabelProps={{ shrink: true }} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12} md={6}><TextField fullWidth select label="Gender" value={formData.gender} onChange={handleChange('gender')} error={Boolean(errors.gender)} helperText={errors.gender} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{genderOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>)}</TextField></Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Address & Contact</Typography></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Address" value={formData.address} onChange={handleChange('address')} error={Boolean(errors.address)} helperText={errors.address} required placeholder="Street, City, State, ZIP" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Emergency Contact" value={formData.emergencyContact} onChange={handleChange('emergencyContact')} error={Boolean(errors.emergencyContact)} helperText={errors.emergencyContact} required placeholder="Name - Phone Number" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Medical Information</Typography></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Medical History" value={formData.medicalHistory} onChange={handleChange('medicalHistory')} multiline rows={3} placeholder="Known allergies, chronic conditions, current medications..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}><Button onClick={onClose} variant="outlined" color="inherit">Cancel</Button><Button onClick={handleSubmit} variant="contained">{isEdit ? 'Update' : 'Add'} Patient</Button></DialogActions>
+      <DialogActions sx={{ p: 2 }}><Button onClick={onClose} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>Cancel</Button><Button onClick={handleSubmit} variant="contained" sx={{ borderRadius: 2, background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)', '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)' } }}>{isEdit ? 'Update' : 'Add'} Patient</Button></DialogActions>
     </Dialog>
   );
 };

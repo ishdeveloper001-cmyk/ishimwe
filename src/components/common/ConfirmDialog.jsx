@@ -32,11 +32,17 @@ const ConfirmDialog = ({
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 2,
+          borderRadius: 3,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <DialogTitle sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 1,
+        fontWeight: 600,
+      }}>
         <Warning color={type} />
         {title}
       </DialogTitle>
@@ -44,7 +50,7 @@ const ConfirmDialog = ({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="outlined" color="inherit">
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>
           {cancelText}
         </Button>
         <Button 
@@ -52,6 +58,15 @@ const ConfirmDialog = ({
           variant="contained" 
           color={type === 'danger' ? 'error' : 'primary'}
           autoFocus
+          sx={{ 
+            borderRadius: 2,
+            ...(type !== 'danger' && {
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
+              },
+            }),
+          }}
         >
           {confirmText}
         </Button>

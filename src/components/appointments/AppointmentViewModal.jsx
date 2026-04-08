@@ -36,17 +36,24 @@ const AppointmentViewModal = ({ open, onClose, appointment }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-      <DialogTitle sx={{ pb: 0 }}>Appointment Details</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)' } }}>
+      <DialogTitle sx={{ 
+        pb: 0,
+        background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        fontWeight: 700,
+      }}>Appointment Details</DialogTitle>
       <DialogContent dividers>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CalendarMonth color="primary" sx={{ fontSize: 32 }} />
             <Box>
-              <Typography variant="h6">{formatDate(appointment.date)}</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>{formatDate(appointment.date)}</Typography>
               <Typography variant="body2" color="text.secondary">{formatTime(appointment.time)}</Typography>
             </Box>
-            <Chip label={appointment.status} color={getStatusColor(appointment.status)} size="small" sx={{ ml: 'auto' }} />
+            <Chip label={appointment.status} color={getStatusColor(appointment.status)} size="small" sx={{ ml: 'auto', borderRadius: 2 }} />
           </Box>
 
           <Divider />
@@ -54,7 +61,7 @@ const AppointmentViewModal = ({ open, onClose, appointment }) => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar sx={{ bgcolor: 'primary.main', width: 44, height: 44 }}>
+                <Avatar sx={{ background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)', width: 44, height: 44 }}>
                   <Person />
                 </Avatar>
                 <Box>
@@ -66,7 +73,7 @@ const AppointmentViewModal = ({ open, onClose, appointment }) => {
             </Grid>
             <Grid item xs={12} md={6}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar sx={{ bgcolor: 'secondary.main', width: 44, height: 44 }}>
+                <Avatar sx={{ background: 'linear-gradient(135deg, #14b8a6 0%, #6366f1 100%)', width: 44, height: 44 }}>
                   <LocalHospital />
                 </Avatar>
                 <Box>
@@ -98,7 +105,7 @@ const AppointmentViewModal = ({ open, onClose, appointment }) => {
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} variant="outlined">Close</Button>
+        <Button onClick={onClose} variant="outlined" sx={{ borderRadius: 2 }}>Close</Button>
       </DialogActions>
     </Dialog>
   );

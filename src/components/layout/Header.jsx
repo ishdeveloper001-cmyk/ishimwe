@@ -129,6 +129,10 @@ const Header = ({ onMenuClick, onLogout, user }) => {
         borderBottom: 1,
         borderColor: 'divider',
         zIndex: (theme) => theme.zIndex.drawer + 1,
+        backdropFilter: 'blur(10px)',
+        background: (theme) => isDark 
+          ? 'rgba(18, 18, 18, 0.8)' 
+          : 'rgba(255, 255, 255, 0.8)',
       }}
     >
       <Toolbar>
@@ -141,6 +145,10 @@ const Header = ({ onMenuClick, onLogout, user }) => {
             mr: 2, 
             display: { md: 'none' },
             color: 'text.primary',
+            '&:hover': {
+              bgcolor: 'action.hover',
+              borderRadius: 2,
+            },
           }}
         >
           <MenuIcon />
@@ -150,18 +158,39 @@ const Header = ({ onMenuClick, onLogout, user }) => {
           sx={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 1,
+            gap: 1.5,
             cursor: 'pointer',
+            px: 1,
+            py: 0.5,
+            borderRadius: 2,
+            transition: 'all 0.2s',
+            '&:hover': {
+              bgcolor: 'action.hover',
+            },
           }}
           onClick={() => navigate('/')}
         >
-          <LocalHospital sx={{ fontSize: 32, color: 'primary.main' }} />
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <LocalHospital sx={{ fontSize: 24, color: 'white' }} />
+          </Box>
           <Typography 
             variant="h6" 
             sx={{ 
-              flexGrow: 1, 
-              fontWeight: 600,
-              color: 'primary.main',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
               display: { xs: 'none', sm: 'block' }
             }}
           >
@@ -175,6 +204,7 @@ const Header = ({ onMenuClick, onLogout, user }) => {
             flexGrow: 1, 
             ml: 3,
             color: 'text.primary',
+            fontWeight: 600,
             display: { xs: 'none', lg: 'block' }
           }}
         >
@@ -189,6 +219,14 @@ const Header = ({ onMenuClick, onLogout, user }) => {
                 onChange={toggleTheme}
                 color="primary"
                 size="small"
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#6366f1',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    bgcolor: '#6366f1',
+                  },
+                }}
               />
             }
             label={isDark ? <DarkMode fontSize="small" /> : <LightMode fontSize="small" />}
@@ -197,7 +235,13 @@ const Header = ({ onMenuClick, onLogout, user }) => {
 
           <IconButton 
             color="inherit" 
-            sx={{ color: 'text.secondary' }}
+            sx={{ 
+              color: 'text.secondary',
+              '&:hover': {
+                bgcolor: 'action.hover',
+                borderRadius: 2,
+              },
+            }}
             onClick={handleNotificationOpen}
           >
             <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
@@ -208,14 +252,21 @@ const Header = ({ onMenuClick, onLogout, user }) => {
           <IconButton
             onClick={handleProfileMenuOpen}
             size="small"
-            sx={{ ml: 1 }}
+            sx={{ 
+              ml: 1,
+              '&:hover': {
+                bgcolor: 'action.hover',
+                borderRadius: 2,
+              },
+            }}
           >
             <Avatar 
               sx={{ 
-                width: 36, 
-                height: 36, 
-                bgcolor: 'primary.main',
-                fontSize: '0.875rem'
+                width: 40, 
+                height: 40, 
+                background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+                fontSize: '0.875rem',
+                fontWeight: 600,
               }}
             >
               {getInitials(user?.name)}

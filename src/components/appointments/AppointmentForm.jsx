@@ -82,41 +82,50 @@ const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError }
   const isDoctorAvailableOnDate = selectedDoctor?.availability.includes(dayName);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-      <DialogTitle>{isEdit ? 'Edit Appointment' : 'Book New Appointment'}</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)' } }}>
+      <DialogTitle sx={{ 
+        pb: 2,
+        background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        fontWeight: 700,
+      }}>
+        {isEdit ? 'Edit Appointment' : 'Book New Appointment'}
+      </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ pt: 2 }}>
-          {conflictError && <Alert severity="error" sx={{ mb: 3 }}>{conflictError}</Alert>}
+          {conflictError && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{conflictError}</Alert>}
           <Grid container spacing={3}>
-            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Appointment Details</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Appointment Details</Typography></Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={Boolean(errors.patientId)}><InputLabel>Patient *</InputLabel>
-                <Select value={formData.patientId} onChange={handleChange('patientId')} label="Patient *">{patients.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}</Select>
+                <Select value={formData.patientId} onChange={handleChange('patientId')} label="Patient *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{patients.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}</Select>
                 {errors.patientId && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.patientId}</Typography>}
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={Boolean(errors.doctorId)}><InputLabel>Doctor *</InputLabel>
-                <Select value={formData.doctorId} onChange={handleChange('doctorId')} label="Doctor *">{doctors.map((d) => <MenuItem key={d.id} value={d.id}>{d.name} - {d.specialization}</MenuItem>)}</Select>
+                <Select value={formData.doctorId} onChange={handleChange('doctorId')} label="Doctor *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{doctors.map((d) => <MenuItem key={d.id} value={d.id}>{d.name} - {d.specialization}</MenuItem>)}</Select>
                 {errors.doctorId && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.doctorId}</Typography>}
               </FormControl>
             </Grid>
-            {formData.doctorId && <Grid item xs={12}><Alert severity={isDoctorAvailableOnDate ? "info" : "warning"} icon={<Typography>📅</Typography>}>{isDoctorAvailableOnDate ? `Dr. ${selectedDoctor?.name} is available on ${dayName}s` : `Dr. ${selectedDoctor?.name} is NOT available on ${dayName}. Please select a different date.`}<br />Regular hours: {selectedDoctor?.workingHours?.start} - {selectedDoctor?.workingHours?.end}</Alert></Grid>}
-            <Grid item xs={12} md={4}><TextField fullWidth label="Date" type="date" value={formData.date} onChange={handleChange('date')} error={Boolean(errors.date)} helperText={errors.date} InputLabelProps={{ shrink: true }} inputProps={{ min: getToday() }} required /></Grid>
+            {formData.doctorId && <Grid item xs={12}><Alert severity={isDoctorAvailableOnDate ? "info" : "warning"} icon={<Typography>📅</Typography>} sx={{ borderRadius: 2 }}>{isDoctorAvailableOnDate ? `Dr. ${selectedDoctor?.name} is available on ${dayName}s` : `Dr. ${selectedDoctor?.name} is NOT available on ${dayName}. Please select a different date.`}<br />Regular hours: {selectedDoctor?.workingHours?.start} - {selectedDoctor?.workingHours?.end}</Alert></Grid>}
+            <Grid item xs={12} md={4}><TextField fullWidth label="Date" type="date" value={formData.date} onChange={handleChange('date')} error={Boolean(errors.date)} helperText={errors.date} InputLabelProps={{ shrink: true }} inputProps={{ min: getToday() }} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
             <Grid item xs={12} md={4}>
               <FormControl fullWidth error={Boolean(errors.time)}><InputLabel>Time *</InputLabel>
-                <Select value={formData.time} onChange={handleChange('time')} label="Time *" disabled={!formData.date || !formData.doctorId || !isDoctorAvailableOnDate}>{availableTimeSlots.length > 0 ? availableTimeSlots.map((slot) => <MenuItem key={slot} value={slot}>{slot}</MenuItem>) : <MenuItem value="" disabled>{formData.date && formData.doctorId ? 'No available slots' : 'Select doctor and date first'}</MenuItem>}</Select>
+                <Select value={formData.time} onChange={handleChange('time')} label="Time *" disabled={!formData.date || !formData.doctorId || !isDoctorAvailableOnDate} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{availableTimeSlots.length > 0 ? availableTimeSlots.map((slot) => <MenuItem key={slot} value={slot}>{slot}</MenuItem>) : <MenuItem value="" disabled>{formData.date && formData.doctorId ? 'No available slots' : 'Select doctor and date first'}</MenuItem>}</Select>
                 {errors.time && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.time}</Typography>}
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={4}><FormControl fullWidth><InputLabel>Duration</InputLabel><Select value={formData.duration} onChange={handleChange('duration')} label="Duration">{durationOptions.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}</Select></FormControl></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Reason for Visit *" value={formData.reason} onChange={handleChange('reason')} error={Boolean(errors.reason)} helperText={errors.reason} required placeholder="e.g., Annual checkup, Follow-up consultation" /></Grid>
-            <Grid item xs={12}><TextField fullWidth label="Additional Notes" value={formData.notes} onChange={handleChange('notes')} multiline rows={3} placeholder="Any additional information for the doctor..." /></Grid>
-            {isEdit && <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>Status Management</Typography><FormControl fullWidth><InputLabel>Status</InputLabel><Select value={formData.status} onChange={handleChange('status')} label="Status">{statusOptions.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}</Select></FormControl></Grid>}
+            <Grid item xs={12} md={4}><FormControl fullWidth><InputLabel>Duration</InputLabel><Select value={formData.duration} onChange={handleChange('duration')} label="Duration" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{durationOptions.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}</Select></FormControl></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Reason for Visit *" value={formData.reason} onChange={handleChange('reason')} error={Boolean(errors.reason)} helperText={errors.reason} required placeholder="e.g., Annual checkup, Follow-up consultation" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Additional Notes" value={formData.notes} onChange={handleChange('notes')} multiline rows={3} placeholder="Any additional information for the doctor..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+            {isEdit && <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Status Management</Typography><FormControl fullWidth><InputLabel>Status</InputLabel><Select value={formData.status} onChange={handleChange('status')} label="Status" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{statusOptions.map((opt) => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}</Select></FormControl></Grid>}
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}><Button onClick={onClose} variant="outlined" color="inherit">Cancel</Button><Button onClick={handleSubmit} variant="contained">{isEdit ? 'Update' : 'Book'} Appointment</Button></DialogActions>
+      <DialogActions sx={{ p: 2 }}><Button onClick={onClose} variant="outlined" color="inherit" sx={{ borderRadius: 2 }}>Cancel</Button><Button onClick={handleSubmit} variant="contained" sx={{ borderRadius: 2, background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)', '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)' } }}>{isEdit ? 'Update' : 'Book'} Appointment</Button></DialogActions>
     </Dialog>
   );
 };

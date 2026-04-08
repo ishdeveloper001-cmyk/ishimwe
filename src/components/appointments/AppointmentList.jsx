@@ -116,9 +116,26 @@ const AppointmentList = ({ user }) => {
           value={searchQuery} 
           onChange={(e) => setSearchQuery(e.target.value)} 
           size="small" 
-          sx={{ minWidth: 350 }} 
+          sx={{ 
+            minWidth: 350,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              transition: 'all 0.2s',
+              '&:hover': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+              },
+              '&.Mui-focused': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                  borderWidth: 2,
+                },
+              },
+            },
+          }} 
           InputProps={{ 
-            startAdornment: <InputAdornment position="start"><Search /></InputAdornment> 
+            startAdornment: <InputAdornment position="start"><Search sx={{ color: 'text.secondary' }} /></InputAdornment> 
           }} 
         />
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -127,6 +144,13 @@ const AppointmentList = ({ user }) => {
             startIcon={<Download />} 
             onClick={handleExport}
             size="small"
+            sx={{
+              borderRadius: 2,
+              transition: 'all 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+              },
+            }}
           >
             Export
           </Button>
@@ -135,6 +159,17 @@ const AppointmentList = ({ user }) => {
               variant="contained" 
               startIcon={<Add />} 
               onClick={() => { setSelectedAppointment(null); setFormOpen(true); }}
+              sx={{
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
+                  boxShadow: '0 6px 16px rgba(99, 102, 241, 0.4)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
             >
               Book Appointment
             </Button>
@@ -142,11 +177,32 @@ const AppointmentList = ({ user }) => {
         </Box>
       </Box>
 
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <Paper 
+        sx={{ 
+          width: '100%', 
+          overflow: 'hidden',
+          borderRadius: 2,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+        }}
+      >
         <Tabs 
           value={viewMode} 
           onChange={handleViewChange} 
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ 
+            borderBottom: 1, 
+            borderColor: 'divider',
+            '& .MuiTab-root': {
+              fontWeight: 500,
+              transition: 'all 0.2s',
+            },
+            '& .Mui-selected': {
+              color: 'primary.main',
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              background: 'linear-gradient(90deg, #6366f1 0%, #ec4899 100%)',
+            },
+          }}
         >
           <Tab icon={<List />} label="List View" value="list" />
           <Tab icon={<CalendarToday />} label="Calendar View" value="calendar" />
@@ -154,7 +210,7 @@ const AppointmentList = ({ user }) => {
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
-            <CircularProgress />
+            <CircularProgress sx={{ color: 'primary.main' }} />
             <Typography sx={{ ml: 2 }}>Loading appointments...</Typography>
           </Box>
         ) : viewMode === 'list' ? (
@@ -170,19 +226,54 @@ const AppointmentList = ({ user }) => {
             checkboxSelection 
             disableRowSelectionOnClick 
             autoHeight 
-            sx={{ border: 0, '& .MuiDataGrid-columnHeaders': { bgcolor: 'action.hover' } }} 
+            sx={{ 
+              border: 0, 
+              '& .MuiDataGrid-columnHeaders': { 
+                bgcolor: 'action.hover',
+                '& .MuiDataGrid-columnHeaderTitle': {
+                  fontWeight: 600,
+                },
+              },
+              '& .MuiDataGrid-row': {
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              },
+              '& .MuiDataGrid-cell': {
+                borderBottom: 1,
+                borderColor: 'divider',
+              },
+            }} 
           />
         ) : (
           <Box sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>Calendar View</Typography>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Calendar View</Typography>
             <Typography variant="body2" color="text.secondary">
               Calendar view coming soon! Currently showing {filteredAppointments.length} appointments.
             </Typography>
             <Box sx={{ mt: 2, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 2 }}>
               {filteredAppointments.slice(0, 6).map((apt) => (
-                <Card key={apt.id} sx={{ minHeight: 120 }}>
+                <Card 
+                  key={apt.id} 
+                  sx={{ 
+                    minHeight: 120,
+                    borderRadius: 2,
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
+                    },
+                  }}
+                >
                   <CardContent>
-                    <Typography variant="subtitle2" color="primary">
+                    <Typography variant="subtitle2" sx={{ 
+                      fontWeight: 600,
+                      background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>
                       {formatDate(apt.date)} at {formatTime(apt.time)}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>

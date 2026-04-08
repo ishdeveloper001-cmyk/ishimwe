@@ -63,11 +63,86 @@ const PatientList = () => {
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <TextField placeholder="Search patients..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} size="small" sx={{ minWidth: 300 }} InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }} />
-        <Button variant="contained" startIcon={<Add />} onClick={() => { setSelectedPatient(null); setFormOpen(true); }}>Add New Patient</Button>
+        <TextField 
+          placeholder="Search patients..." 
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)} 
+          size="small" 
+          sx={{ 
+            minWidth: 300,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              transition: 'all 0.2s',
+              '&:hover': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+              },
+              '&.Mui-focused': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                  borderWidth: 2,
+                },
+              },
+            },
+          }} 
+          InputProps={{ startAdornment: <InputAdornment position="start"><Search sx={{ color: 'text.secondary' }} /></InputAdornment> }} 
+        />
+        <Button 
+          variant="contained" 
+          startIcon={<Add />} 
+          onClick={() => { setSelectedPatient(null); setFormOpen(true); }}
+          sx={{
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+            transition: 'all 0.2s',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
+              boxShadow: '0 6px 16px rgba(99, 102, 241, 0.4)',
+              transform: 'translateY(-2px)',
+            },
+          }}
+        >
+          Add New Patient
+        </Button>
       </Box>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <DataGrid rows={filteredPatients} columns={columns} initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } }, sorting: { sortModel: [{ field: 'name', sort: 'asc' }] } }} pageSizeOptions={[5, 10, 25]} checkboxSelection disableRowSelectionOnClick autoHeight sx={{ border: 0, '& .MuiDataGrid-columnHeaders': { bgcolor: 'action.hover' } }} />
+      <Paper 
+        sx={{ 
+          width: '100%', 
+          overflow: 'hidden',
+          borderRadius: 2,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+        }}
+      >
+        <DataGrid 
+          rows={filteredPatients} 
+          columns={columns} 
+          initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } }, sorting: { sortModel: [{ field: 'name', sort: 'asc' }] } }} 
+          pageSizeOptions={[5, 10, 25]} 
+          checkboxSelection 
+          disableRowSelectionOnClick 
+          autoHeight 
+          sx={{ 
+            border: 0, 
+            '& .MuiDataGrid-columnHeaders': { 
+              bgcolor: 'action.hover',
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 600,
+              },
+            },
+            '& .MuiDataGrid-row': {
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: 1,
+              borderColor: 'divider',
+            },
+          }} 
+        />
       </Paper>
       <PatientForm open={formOpen} onClose={() => { setFormOpen(false); setSelectedPatient(null); }} onSave={() => { loadPatients(); setFormOpen(false); setSelectedPatient(null); }} patient={selectedPatient} />
       <ConfirmDialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} onConfirm={() => { if (patientToDelete) { dataStore.deletePatient(patientToDelete.id); loadPatients(); setPatientToDelete(null); } }} title="Delete Patient" message={`Are you sure you want to delete ${patientToDelete?.name}? This action cannot be undone.`} confirmText="Delete" type="danger" />

@@ -214,11 +214,28 @@ const DoctorList = ({ user }) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           size="small"
-          sx={{ minWidth: 300 }}
+          sx={{ 
+            minWidth: 300,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              transition: 'all 0.2s',
+              '&:hover': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+              },
+              '&.Mui-focused': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                  borderWidth: 2,
+                },
+              },
+            },
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <Search sx={{ color: 'text.secondary' }} />
               </InputAdornment>
             ),
           }}
@@ -228,13 +245,31 @@ const DoctorList = ({ user }) => {
             variant="contained"
             startIcon={<Add />}
             onClick={handleAddDoctor}
+            sx={{
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+              transition: 'all 0.2s',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
+                boxShadow: '0 6px 16px rgba(99, 102, 241, 0.4)',
+                transform: 'translateY(-2px)',
+              },
+            }}
           >
             Add New Doctor
           </Button>
         )}
       </Box>
 
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <Paper 
+        sx={{ 
+          width: '100%', 
+          overflow: 'hidden',
+          borderRadius: 2,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+        }}
+      >
         <DataGrid
           rows={filteredDoctors}
           columns={columns}
@@ -254,6 +289,19 @@ const DoctorList = ({ user }) => {
             border: 0,
             '& .MuiDataGrid-columnHeaders': {
               bgcolor: 'action.hover',
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 600,
+              },
+            },
+            '& .MuiDataGrid-row': {
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: 1,
+              borderColor: 'divider',
             },
           }}
         />
