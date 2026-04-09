@@ -68,9 +68,9 @@ const Profile = ({ user }) => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
+        <Typography
+          variant="h4"
+          sx={{
             fontWeight: 700,
             background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
             WebkitBackgroundClip: 'text',
@@ -301,7 +301,7 @@ const Profile = ({ user }) => {
             </Grid>
           </Paper>
 
-          <Paper
+          {/* <Paper
             elevation={0}
             sx={{
               p: 3,
@@ -373,7 +373,7 @@ const Profile = ({ user }) => {
                 </Card>
               </Grid>
             </Grid>
-          </Paper>
+          </Paper> */}
         </Grid>
       </Grid>
     </Container>

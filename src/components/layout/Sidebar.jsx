@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Person,
+  Home,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -33,7 +34,7 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
 const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+    { text: 'Dashboard', icon: <Home />, path: '/' },
     { text: 'Doctors', icon: <People />, path: '/doctors', roles: ['admin', 'receptionist'] },
     { text: 'Patients', icon: <LocalHospital />, path: '/patients', roles: ['admin', 'doctor'] },
     { text: 'Appointments', icon: <CalendarMonth />, path: '/appointments' },
