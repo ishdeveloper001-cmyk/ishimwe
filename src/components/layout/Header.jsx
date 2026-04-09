@@ -92,6 +92,8 @@ const Header = ({ onMenuClick, onLogout, user }) => {
         return 'Analytics Dashboard';
       case '/profile':
         return 'My Profile';
+      case '/settings':
+        return 'System Settings';
       default:
         return 'Doctor Appointment System';
     }
@@ -302,7 +304,7 @@ const Header = ({ onMenuClick, onLogout, user }) => {
             </ListItemIcon>
             <ListItemText>Profile</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={() => navigate('/settings')}>
             <ListItemIcon>
               <Settings fontSize="small" />
             </ListItemIcon>
