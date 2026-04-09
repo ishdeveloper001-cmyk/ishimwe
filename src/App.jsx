@@ -91,7 +91,7 @@ function App() {
                 <Route path="/appointments" element={<AppointmentList user={user} />} />
                 {user.role === 'admin' && <Route path="/analytics" element={<Analytics />} />}
                 <Route path="/profile" element={<Profile user={user} />} />
-                <Route path="/settings" element={<Settings user={user} />} />
+                <Route path="/settings" element={<Settings user={user} onLogout={handleLogout} />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Box>

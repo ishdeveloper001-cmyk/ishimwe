@@ -18,12 +18,13 @@ import {
   Notifications,
   Security,
   Palette,
-  Language,
+  Person as PersonIcon, // Renamed to avoid conflict with Person from Profile
   Save,
+  Logout,
 } from '@mui/icons-material';
 import { useThemeMode } from '../../context/ThemeContext.jsx';
 
-const Settings = ({ user }) => {
+const Settings = ({ user, onLogout }) => {
   const { isDark, toggleTheme } = useThemeMode();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
@@ -111,18 +112,30 @@ const Settings = ({ user }) => {
         </Grid>
 
         {/* Regional Settings */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6}> {/* This is the Paper you wanted to change */}
           <Paper sx={{ p: 3, borderRadius: 3, height: '100%' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1.5 }}>
-              <Language color="primary" />
-              <Typography variant="h6" fontWeight={600}>Language & Region</Typography>
+              <PersonIcon color="primary" /> {/* Changed icon */}
+              <Typography variant="h6" fontWeight={600}>Account Information</Typography> {/* Changed title */}
             </Box>
             <Divider sx={{ mb: 2 }} />
-            <TextField select fullWidth label="Language" defaultValue="en" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
-              <MuiMenuItem value="en">English (US)</MuiMenuItem>
-              <MuiMenuItem value="fr">French</MuiMenuItem>
-              <MuiMenuItem value="rw">Kinyarwanda</MuiMenuItem>
-            </TextField>
+            <List disablePadding>
+              <ListItem>
+                <ListItemText primary="Username" secondary={user?.name || 'N/A'} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Email" secondary={user?.email || 'N/A'} />
+              </ListItem>
+              <ListItem>
+                <ListItemText primary="Role" secondary={user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'N/A'} />
+              </ListItem>
+              <Divider sx={{ my: 1 }} />
+              <ListItem>
+                <Button variant="outlined" startIcon={<Logout />} onClick={onLogout} fullWidth sx={{ borderRadius: 2 }}>
+                  Logout
+                </Button>
+              </ListItem>
+            </List>
           </Paper>
         </Grid>
 
