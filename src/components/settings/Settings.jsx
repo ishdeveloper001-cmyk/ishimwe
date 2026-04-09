@@ -141,12 +141,12 @@ const Settings = ({ user, onLogout }) => {
             </Box>
             <Divider sx={{ mb: 2 }} />
             <List disablePadding>
-              <ListItem>
+              {/* <ListItem>
                 <ListItemText primary="Two-Factor Authentication" secondary="Add an extra layer of security" />
                 <ListItemSecondaryAction>
                   <Switch checked={twoFactor} onChange={(e) => setTwoFactor(e.target.checked)} color="primary" />
                 </ListItemSecondaryAction>
-              </ListItem>
+              </ListItem> */}
               <ListItem>
                 <ListItemText primary="Password" secondary="Change your account password" />
                 <Button 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Box, Toolbar } from '@mui/material';
+import { Box, Toolbar, Typography } from '@mui/material';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { NotificationProvider } from './context/NotificationContext.jsx';
 import Header from './components/layout/Header.jsx';
@@ -94,6 +94,34 @@ function App() {
                 <Route path="/settings" element={<Settings user={user} onLogout={handleLogout} />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
+              {/* Footer */}
+              <Box
+                component="footer"
+                sx={{
+                  mt: 4, // Margin top to separate from content
+                  py: 3, // Padding top and bottom
+                  px: 2, // Padding left and right
+                  bgcolor: 'background.paper', // Use theme's paper background
+                  borderTop: 1, // Top border
+                  borderColor: 'divider', // Divider color
+                  textAlign: 'center',
+                  color: 'text.secondary',
+                  fontSize: '0.8rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5,
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Designed by ISHIMWE Jean D'Amour &copy; {new Date().getFullYear()} All rights reserved.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Contact me on <a href="https://wa.me/250792538516" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>+250 792 538 516</a> on WhatsApp.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  My website: <a href="http://ishimwe-profile.surge.sh" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>ishimwe.surge.sh</a>
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Router>
