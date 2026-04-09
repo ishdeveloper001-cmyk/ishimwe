@@ -73,6 +73,7 @@ function App() {
               sx={{
                 flexGrow: 1,
                 p: 3,
+                pb: 10,
                 ml: { md: `${collapsedWidth}px` },
                 transition: 'margin-left 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms',
                 marginLeft: sidebarCollapsed ? `${collapsedWidth}px` : `${drawerWidth}px`,
