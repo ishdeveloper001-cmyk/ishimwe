@@ -230,3 +230,100 @@
     padding: $spacing-md;
   }
 }
+
+// Footer styles - matching header design
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-index-fixed;
+  
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid $light-border-color;
+  
+  .dark-mode & {
+    background: rgba(18, 18, 18, 0.8);
+    border-color: $dark-border-color;
+  }
+  
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+    padding: $spacing-md $spacing-lg $spacing-lg;
+    
+    @include mobile {
+      flex-direction: column;
+      gap: $spacing-sm;
+      padding: $spacing-sm;
+    }
+    
+    .footer-icon {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      cursor: pointer;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-md;
+      transition: all $transition-normal;
+      
+      &:hover {
+        background-color: rgba($light-text-secondary, 0.1);
+        
+        .dark-mode & {
+          background-color: rgba($dark-text-secondary, 0.1);
+        }
+      }
+      
+      .icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: $border-radius-md;
+        background: $gradient-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    .footer-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $spacing-xs;
+      
+      .title {
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+      
+      .links {
+        font-size: 0.75rem;
+        color: $light-text-secondary;
+        
+        .dark-mode & {
+          color: $dark-text-secondary;
+        }
+        
+        a {
+          color: $primary-color;
+          text-decoration: none;
+          font-weight: 500;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Update main content padding for fixed footer
+.main-wrapper {
+  padding-bottom: 80px;
+}
