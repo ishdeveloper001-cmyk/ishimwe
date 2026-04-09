@@ -12,6 +12,10 @@ import {
   Divider,
   Button,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   MenuItem as MuiMenuItem,
 } from '@mui/material';
 import {
@@ -23,12 +27,52 @@ import {
   Logout,
 } from '@mui/icons-material';
 import { useThemeMode } from '../../context/ThemeContext.jsx';
+import { useNotification } from '../../context/NotificationContext.jsx';
 
 const Settings = ({ user, onLogout }) => {
   const { isDark, toggleTheme } = useThemeMode();
+  const { showNotification } = useNotification();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
   const [twoFactor, setTwoFactor] = useState(false);
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    current: '',
+    new: '',
+    confirm: ''
+  });
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordUpdate = () => {
+    // Get existing credentials or defaults
+    const storedCreds = localStorage.getItem('clinic-credentials');
+    const credentials = storedCreds ? JSON.parse(storedCreds) : {
+      admin: { email: 'ishimwe@clinic.com', password: 'admin123', name: 'Ishimwe' },
+      doctor: { email: 'kwizera@clinic.com', password: 'doctor123', name: 'Dr. Kwizera' },
+      patient: { email: 'uwamahoro@clinic.com', password: 'patient123', name: 'Uwamahoro' }
+    };
+
+    const currentUserCreds = credentials[user.role];
+
+    // Verify current password
+    if (passwordData.current !== currentUserCreds.password) {
+      showNotification('Current password is incorrect.', 'error');
+      return;
+    }
+
+    // Update and persist
+    credentials[user.role].password = passwordData.new;
+    localStorage.setItem('clinic-credentials', JSON.stringify(credentials));
+
+    showNotification('Password updated successfully! Use your new password for future logins.', 'success');
+    setPasswordDialogOpen(false);
+    setPasswordData({ current: '', new: '', confirm: '' });
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -105,7 +149,14 @@ const Settings = ({ user, onLogout }) => {
               </ListItem>
               <ListItem>
                 <ListItemText primary="Password" secondary="Change your account password" />
-                <Button variant="outlined" size="small" sx={{ borderRadius: 2 }}>Update</Button>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  sx={{ borderRadius: 2 }}
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
+                  Update
+                </Button>
               </ListItem>
             </List>
           </Paper>
@@ -145,6 +196,62 @@ const Settings = ({ user, onLogout }) => {
           </Button>
         </Grid>
       </Grid>
+
+      {/* Change Password Dialog */}
+      <Dialog 
+        open={passwordDialogOpen} 
+        onClose={() => setPasswordDialogOpen(false)}
+        PaperProps={{ sx: { borderRadius: 3, width: '100%', maxWidth: 400 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Change Password</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              fullWidth
+              type="password"
+              label="Current Password"
+              name="current"
+              value={passwordData.current}
+              onChange={handlePasswordChange}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+            <TextField
+              fullWidth
+              type="password"
+              label="New Password"
+              name="new"
+              value={passwordData.new}
+              onChange={handlePasswordChange}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+            <TextField
+              fullWidth
+              type="password"
+              label="Confirm New Password"
+              name="confirm"
+              value={passwordData.confirm}
+              onChange={handlePasswordChange}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setPasswordDialogOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handlePasswordUpdate}
+            disabled={!passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm}
+            sx={{ 
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)'
+            }}
+          >
+            Update Password
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -29,14 +29,18 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = sampleUsers[role];
+    
+    // Check local storage for updated credentials, fallback to sampleUsers
+    const storedCreds = localStorage.getItem('clinic-credentials');
+    const credentials = storedCreds ? JSON.parse(storedCreds) : sampleUsers;
+    const user = credentials[role];
 
     if (!user) {
       setError('Invalid role selected.');
       return;
     }
-    if (email.toLowerCase() !== user.email || password !== user.password) {
-      setError('Invalid credentials. Use sample credentials listed below.');
+    if (email.toLowerCase() !== user.email.toLowerCase() || password !== user.password) {
+      setError('Invalid credentials. Please check your email and password.');
       return;
     }
 
