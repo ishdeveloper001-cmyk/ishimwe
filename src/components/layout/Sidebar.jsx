@@ -33,9 +33,9 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-const menuItems = [
+  const menuItems = [
     { text: 'Dashboard', icon: <Home />, path: '/' },
-    { text: 'Doctors', icon: <People />, path: '/doctors', roles: ['admin', 'receptionist'] },
+    { text: 'Doctors', icon: <People />, path: '/doctors', roles: ['admin', 'receptionist', 'doctor'] },
     { text: 'Patients', icon: <LocalHospital />, path: '/patients', roles: ['admin', 'doctor'] },
     { text: 'Appointments', icon: <CalendarMonth />, path: '/appointments' },
     { text: 'Analytics', icon: <BarChart />, path: '/analytics', roles: ['admin'] },

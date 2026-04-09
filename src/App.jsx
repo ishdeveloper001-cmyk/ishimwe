@@ -86,7 +86,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 {user.role !== 'patient' && <Route path="/doctors" element={<DoctorList user={user} />} />}
-                {user.role !== 'doctor' && <Route path="/patients" element={<PatientList user={user} />} />}
+{['admin', 'doctor'].includes(user.role) && <Route path="/patients" element={<PatientList user={user} />} />}
                 <Route path="/appointments" element={<AppointmentList user={user} />} />
                 {user.role === 'admin' && <Route path="/analytics" element={<Analytics />} />}
                 <Route path="/profile" element={<Profile user={user} />} />

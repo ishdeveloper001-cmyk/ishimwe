@@ -105,7 +105,7 @@ const DoctorList = ({ user }) => {
           src={params.value}
           sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}
         >
-          {params.row.name?.charAt(0)}
+{params.row.name?.charAt(0).toUpperCase() + params.row.name.split(' ')[1]?.charAt(0).toUpperCase()}
         </Avatar>
       ),
     },
