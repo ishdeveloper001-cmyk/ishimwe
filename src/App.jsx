@@ -21,10 +21,7 @@ const collapsedWidth = 72;
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('clinic-user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
 
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
@@ -46,6 +43,8 @@ function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('clinic-user');
+    localStorage.removeItem('clinic-credentials');
+    // Redirect to login implicitly via !user check
   };
 
   if (!user) {

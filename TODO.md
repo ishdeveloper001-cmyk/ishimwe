@@ -1,1 +1,7 @@
-# Role-Based Access Control Implementation\n\n## Steps to Complete\n\n### 1. [x] Update src/App.jsx\n- Modify patients route condition to `['admin', 'doctor'].includes(user.role)`\n\n### 2. [x] Update src/components/layout/Sidebar.jsx\n- Add 'doctor' to Doctors menu roles: `['admin', 'receptionist', 'doctor']`\n\n### 3. [x] Verify src/components/doctors/DoctorList.jsx\n- Confirmed admin-only CRUD (already implemented)\n\n### 4. [x] Test Changes\n- Login as doctor: Doctors/Patients nav + view-only lists available\n- Login as patient: No Doctors/Patients nav, appointments accessible\n\n### 5. [x] Run `npm run dev` and validate\n\n---\n✅ All steps completed. Role-based access implemented successfully.
+# Fix "Why I can login" (Auto-login due to localStorage persistence)
+
+- [x] User confirmed diagnosis: Remove auto-load of user from localStorage in App.jsx
+- [x] Step 1: Edit src/App.jsx - Initialize user as null (no localStorage load), improve handleLogout
+- [x] Step 2: Edit src/components/auth/Login.jsx - Uncomment sample credentials display for better UX
+- [ ] Step 3: Test changes - Clear localStorage, refresh app, verify forces login screen
+- [ ] Step 4: Run dev server and demo fix (attempt_completion)

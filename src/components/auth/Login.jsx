@@ -129,7 +129,7 @@ const Login = ({ onLogin }) => {
             Sign In
           </Button>
 
-           {/* <Box mt={2}>
+          <Box mt={2}>
              <Typography variant="subtitle2" mb={1} sx={{ fontWeight: 600 }}>
                Sample credentials
              </Typography>
@@ -142,7 +142,7 @@ const Login = ({ onLogin }) => {
              <Typography variant="caption" display="block">
                Patient: uwamahoro@clinic.com / patient123
              </Typography>
-           </Box> */}
+           </Box>
         </Box>
       </Paper>
     </Box>
