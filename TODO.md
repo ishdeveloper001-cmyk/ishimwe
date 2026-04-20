@@ -1,7 +1,15 @@
-# Fix "Why I can login" (Auto-login due to localStorage persistence)
+# Per-user passwords for patients/doctors (admin creates/manages)
 
-- [x] User confirmed diagnosis: Remove auto-load of user from localStorage in App.jsx
-- [x] Step 1: Edit src/App.jsx - Initialize user as null (no localStorage load), improve handleLogout
-- [x] Step 2: Edit src/components/auth/Login.jsx - Uncomment sample credentials display for better UX
-- [ ] Step 3: Test changes - Clear localStorage, refresh app, verify forces login screen
-- [ ] Step 4: Run dev server and demo fix (attempt_completion)
+## Previous Task (completed)
+- Fixed auto-login
+
+## New Task: Per-user passwords
+- [x] Step 1: Update mockData.jsx - Add password to initial patients/doctors
+- [x] Step 2: Update dataStore.jsx - Include password in patient/doctor models & ops (added getAllUsers)
+- [x] Step 3: Update PatientForm/DoctorForm - Add password field (admin-only create)
+- [x] Step 4: Update PatientList/DoctorList - Add password column (admin-only)
+- [x] Step 5: Update Login.jsx - Use dataStore.getAllUsers() for auth
+- [x] Task complete - Test: Admin add patient/doctor with password, view in list, login with new creds
+
+- [ ] Step 2: Update dataStore.jsx - Include password in patient/doctor models & ops
+- [ 

@@ -1,7 +1,7 @@
 import { generateId } from '../utils/validation.jsx';
 import { initialDoctors, initialPatients, initialAppointments } from './mockData.jsx';
 
-// Data store class
+// Data store class - Added password support for patients/doctors
 class DataStore {
   constructor() {
     this.doctors = [...initialDoctors];
@@ -9,13 +9,18 @@ class DataStore {
     this.appointments = [...initialAppointments];
   }
 
-  // Doctor operations
+  // Doctor operations (password included)
   getDoctors = () => [...this.doctors];
 
   getDoctorById = (id) => this.doctors.find(d => d.id === id);
 
   addDoctor = (doctor) => {
-    const newDoctor = { ...doctor, id: generateId(), createdAt: new Date().toISOString().split('T')[0] };
+    const newDoctor = { 
+      ...doctor, 
+      id: generateId(), 
+      createdAt: new Date().toISOString().split('T')[0],
+      role: 'doctor' // Explicit role
+    };
     this.doctors.push(newDoctor);
     return newDoctor;
   };
@@ -38,13 +43,18 @@ class DataStore {
     return false;
   };
 
-  // Patient operations
+  // Patient operations (password included)
   getPatients = () => [...this.patients];
 
   getPatientById = (id) => this.patients.find(p => p.id === id);
 
   addPatient = (patient) => {
-    const newPatient = { ...patient, id: generateId(), registrationDate: new Date().toISOString().split('T')[0] };
+    const newPatient = { 
+      ...patient, 
+      id: generateId(), 
+      registrationDate: new Date().toISOString().split('T')[0],
+      role: 'patient' // Explicit role
+    };
     this.patients.push(newPatient);
     return newPatient;
   };
@@ -67,7 +77,19 @@ class DataStore {
     return false;
   };
 
-  // Appointment operations
+  // Get all users for auth (patients + doctors + admin)
+  getAllUsers = () => {
+    const admin = {
+      id: 'admin1',
+      role: 'admin',
+      email: 'ishimwe@clinic.com',
+      name: 'Ishimwe',
+      password: 'admin123'
+    };
+    return [admin, ...this.doctors, ...this.patients];
+  };
+
+  // Appointment operations (unchanged)
   getAppointments = () => [...this.appointments];
 
   getAppointmentById = (id) => this.appointments.find(a => a.id === id);

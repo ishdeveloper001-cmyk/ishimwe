@@ -162,6 +162,12 @@ const DoctorList = ({ user }) => {
       ),
     },
     {
+      field: 'password',
+      headerName: 'Password',
+      width: 120,
+      renderCell: (params) => user?.role === 'admin' ? <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> : '***',
+    },
+    {
       field: 'consultationFee',
       headerName: 'Fee',
       width: 100,
