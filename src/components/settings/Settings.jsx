@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import dataStore from '../../data/dataStore.jsx';
 import {
   Box,
   Typography,
@@ -25,6 +26,7 @@ import {
   Person as PersonIcon, // Renamed to avoid conflict with Person from Profile
   Save,
   Logout,
+
 } from '@mui/icons-material';
 import { useThemeMode } from '../../context/ThemeContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
@@ -48,7 +50,7 @@ const Settings = ({ user, onLogout }) => {
     setPasswordData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordUpdate = () => {
+  const handlePasswordUpdate = async () => {
     // Get existing credentials or defaults
     const storedCreds = localStorage.getItem('clinic-credentials');
     const credentials = storedCreds ? JSON.parse(storedCreds) : {
@@ -65,11 +67,28 @@ const Settings = ({ user, onLogout }) => {
       return;
     }
 
-    // Update and persist
+    // Update credentials
     credentials[user.role].password = passwordData.new;
-    localStorage.setItem('clinic-credentials', JSON.stringify(credentials));
 
-    showNotification('Password updated successfully! Use your new password for future logins.', 'success');
+    // Update individual user record in dataStore
+    const userRecord = dataStore.getUserByRoleAndEmail(user.role, user.email);
+    if (userRecord && userRecord.id) {
+      const updates = {
+        password: passwordData.new,
+        passwordChangedAt: new Date().toISOString().split('T')[0]
+      };
+      if (user.role === 'doctor') {
+        dataStore.updateDoctor(userRecord.id, updates);
+      } else if (user.role === 'patient') {
+        dataStore.updatePatient(userRecord.id, updates);
+      }
+    }
+
+    // Persist both
+    localStorage.setItem('clinic-credentials', JSON.stringify(credentials));
+    dataStore.saveData();
+
+    showNotification('Password updated successfully! Admin can now see the change with timestamp. Use your new password for future logins.', 'success');
     setPasswordDialogOpen(false);
     setPasswordData({ current: '', new: '', confirm: '' });
   };

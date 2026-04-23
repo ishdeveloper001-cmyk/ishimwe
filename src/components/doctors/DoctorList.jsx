@@ -93,6 +93,7 @@ const DoctorList = ({ user }) => {
     handleFormClose();
   };
 
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const columns = [
     {
       field: 'profileImage',
@@ -166,6 +167,12 @@ const DoctorList = ({ user }) => {
       headerName: 'Password',
       width: 120,
       renderCell: (params) => user?.role === 'admin' ? <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> : '***',
+    },
+    {
+      field: 'passwordChangedAt',
+      headerName: 'Pwd Changed',
+      width: 140,
+      renderCell: (params) => user?.role === 'admin' ? (params.value ? <Chip label={`Changed ${formatDate(params.value)}`} size="small" color="success" variant="outlined" /> : <Chip label="Original" size="small" color="default" variant="outlined" />) : '***',
     },
     {
       field: 'consultationFee',

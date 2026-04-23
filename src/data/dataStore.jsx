@@ -93,6 +93,19 @@ class DataStore {
   };
 
   // Get all users for auth (patients + doctors + admin)
+  getUserByRoleAndEmail = (role, email) => {
+    if (role === 'admin') {
+      return { id: 'admin1', role: 'admin', email: 'ishimwe@clinic.com', name: 'Ishimwe' };
+    }
+    if (role === 'doctor') {
+      return this.doctors.find(d => d.email === email);
+    }
+    if (role === 'patient') {
+      return this.patients.find(p => p.email === email);
+    }
+    return null;
+  };
+
   getAllUsers = () => {
     const admin = {
       id: 'admin1',
