@@ -45,7 +45,6 @@ const PatientList = ({ user }) => {
     return age;
   };
 
-  const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const columns = [
     { field: 'avatar', headerName: 'Patient', flex: 1, minWidth: 200, renderCell: (params) => (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -59,7 +58,6 @@ const PatientList = ({ user }) => {
     { field: 'dateOfBirth', headerName: 'Date of Birth', width: 130, renderCell: (params) => formatDate(params.value) },
     { field: 'registrationDate', headerName: 'Registered', width: 130, renderCell: (params) => formatDate(params.value) },
     { field: 'password', headerName: 'Password', width: 120, renderCell: (params) => user?.role === 'admin' ? <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> : '***' },
-    { field: 'passwordChangedAt', headerName: 'Pwd Changed', width: 140, renderCell: (params) => user?.role === 'admin' ? (params.value ? <Chip label={`Changed ${formatDate(params.value)}`} size="small" color="success" variant="outlined" /> : <Chip label="Original" size="small" color="default" variant="outlined" />) : '***' },
     { field: 'medicalHistory', headerName: 'Medical Notes', flex: 1, minWidth: 150, renderCell: (params) => <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{params.value || 'None'}</Typography> },
   { field: 'actions', type: 'actions', headerName: 'Actions', width: 140, getActions: (params) => {
       const actions = [];

@@ -4,17 +4,10 @@ import { initialDoctors, initialPatients, initialAppointments } from './mockData
 // Data store class - Added password support for patients/doctors
 class DataStore {
   constructor() {
-    // Load from localStorage or use initial data
-    this.doctors = JSON.parse(localStorage.getItem('clinic-doctors')) || [...initialDoctors];
-    this.patients = JSON.parse(localStorage.getItem('clinic-patients')) || [...initialPatients];
-    this.appointments = JSON.parse(localStorage.getItem('clinic-appointments')) || [...initialAppointments];
+    this.doctors = [...initialDoctors];
+    this.patients = [...initialPatients];
+    this.appointments = [...initialAppointments];
   }
-
-  saveData = () => {
-    localStorage.setItem('clinic-doctors', JSON.stringify(this.doctors));
-    localStorage.setItem('clinic-patients', JSON.stringify(this.patients));
-    localStorage.setItem('clinic-appointments', JSON.stringify(this.appointments));
-  };
 
   // Doctor operations (password included)
   getDoctors = () => [...this.doctors];
@@ -24,13 +17,11 @@ class DataStore {
   addDoctor = (doctor) => {
     const newDoctor = { 
       ...doctor, 
-      password: 'doctor123',
       id: generateId(), 
       createdAt: new Date().toISOString().split('T')[0],
       role: 'doctor' // Explicit role
     };
     this.doctors.push(newDoctor);
-    this.saveData();
     return newDoctor;
   };
 
@@ -38,7 +29,6 @@ class DataStore {
     const index = this.doctors.findIndex(d => d.id === id);
     if (index !== -1) {
       this.doctors[index] = { ...this.doctors[index], ...updates };
-      this.saveData();
       return this.doctors[index];
     }
     return null;
@@ -48,7 +38,6 @@ class DataStore {
     const index = this.doctors.findIndex(d => d.id === id);
     if (index !== -1) {
       this.doctors.splice(index, 1);
-      this.saveData();
       return true;
     }
     return false;
@@ -62,13 +51,11 @@ class DataStore {
   addPatient = (patient) => {
     const newPatient = { 
       ...patient, 
-      password: 'pat123',
       id: generateId(), 
       registrationDate: new Date().toISOString().split('T')[0],
       role: 'patient' // Explicit role
     };
     this.patients.push(newPatient);
-    this.saveData();
     return newPatient;
   };
 
@@ -76,7 +63,6 @@ class DataStore {
     const index = this.patients.findIndex(p => p.id === id);
     if (index !== -1) {
       this.patients[index] = { ...this.patients[index], ...updates };
-      this.saveData();
       return this.patients[index];
     }
     return null;
@@ -86,26 +72,12 @@ class DataStore {
     const index = this.patients.findIndex(p => p.id === id);
     if (index !== -1) {
       this.patients.splice(index, 1);
-      this.saveData();
       return true;
     }
     return false;
   };
 
   // Get all users for auth (patients + doctors + admin)
-  getUserByRoleAndEmail = (role, email) => {
-    if (role === 'admin') {
-      return { id: 'admin1', role: 'admin', email: 'ishimwe@clinic.com', name: 'Ishimwe' };
-    }
-    if (role === 'doctor') {
-      return this.doctors.find(d => d.email === email);
-    }
-    if (role === 'patient') {
-      return this.patients.find(p => p.email === email);
-    }
-    return null;
-  };
-
   getAllUsers = () => {
     const admin = {
       id: 'admin1',
@@ -135,7 +107,6 @@ class DataStore {
       createdAt: new Date().toISOString().split('T')[0]
     };
     this.appointments.push(newAppointment);
-    this.saveData();
     return newAppointment;
   };
 
@@ -143,7 +114,6 @@ class DataStore {
     const index = this.appointments.findIndex(a => a.id === id);
     if (index !== -1) {
       this.appointments[index] = { ...this.appointments[index], ...updates };
-      this.saveData();
       return this.appointments[index];
     }
     return null;
@@ -153,7 +123,6 @@ class DataStore {
     const index = this.appointments.findIndex(a => a.id === id);
     if (index !== -1) {
       this.appointments.splice(index, 1);
-      this.saveData();
       return true;
     }
     return false;
