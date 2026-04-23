@@ -51,44 +51,26 @@ const Settings = ({ user, onLogout }) => {
   };
 
   const handlePasswordUpdate = async () => {
-    // Get existing credentials or defaults
-    const storedCreds = localStorage.getItem('clinic-credentials');
-    const credentials = storedCreds ? JSON.parse(storedCreds) : {
-      admin: { email: 'ishimwe@clinic.com', password: 'admin123', name: 'Ishimwe' },
-      doctor: { email: 'kwizera@clinic.com', password: 'doctor123', name: 'Dr. Kwizera' },
-      patient: { email: 'uwamahoro@clinic.com', password: 'patient123', name: 'Uwamahoro' }
-    };
-
-    const currentUserCreds = credentials[user.role];
+    // Find user in dataStore
+    const allUsers = dataStore.getAllUsers();
+    const currentUser = allUsers.find(u => u.email === user.email && u.role === user.role);
 
     // Verify current password
-    if (passwordData.current !== currentUserCreds.password) {
+    if (!currentUser || passwordData.current !== currentUser.password) {
       showNotification('Current password is incorrect.', 'error');
       return;
     }
 
-    // Update credentials
-    credentials[user.role].password = passwordData.new;
-
-    // Update individual user record in dataStore
-    const userRecord = dataStore.getUserByRoleAndEmail(user.role, user.email);
-    if (userRecord && userRecord.id) {
-      const updates = {
-        password: passwordData.new,
-        passwordChangedAt: new Date().toISOString().split('T')[0]
-      };
+    // Update user password in dataStore
+    if (currentUser.id) {
       if (user.role === 'doctor') {
-        dataStore.updateDoctor(userRecord.id, updates);
+        dataStore.updateDoctor(currentUser.id, { password: passwordData.new });
       } else if (user.role === 'patient') {
-        dataStore.updatePatient(userRecord.id, updates);
+        dataStore.updatePatient(currentUser.id, { password: passwordData.new });
       }
     }
 
-    // Persist both
-    localStorage.setItem('clinic-credentials', JSON.stringify(credentials));
-    dataStore.saveData();
-
-    showNotification('Password updated successfully! Admin can now see the change with timestamp. Use your new password for future logins.', 'success');
+    showNotification('Password updated successfully! Use your new password for future logins.', 'success');
     setPasswordDialogOpen(false);
     setPasswordData({ current: '', new: '', confirm: '' });
   };
