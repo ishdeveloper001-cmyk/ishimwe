@@ -1,12 +1,32 @@
 import { generateId } from '../utils/validation.jsx';
 import { initialDoctors, initialPatients, initialAppointments } from './mockData.jsx';
 
-// Data store class - Added password support for patients/doctors
+// Data store class - Added password support for patients/doctors + localStorage persistence
 class DataStore {
   constructor() {
-    this.doctors = [...initialDoctors];
-    this.patients = [...initialPatients];
-    this.appointments = [...initialAppointments];
+    this.doctors = this._loadFromStorage('doctors') || [...initialDoctors];
+    this.patients = this._loadFromStorage('patients') || [...initialPatients];
+    this.appointments = this._loadFromStorage('appointments') || [...initialAppointments];
+    this._saveToStorage();
+  }
+
+  _loadFromStorage(key) {
+    try {
+      const data = localStorage.getItem(`clinic-${key}`);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  _saveToStorage() {
+    try {
+      localStorage.setItem('clinic-doctors', JSON.stringify(this.doctors));
+      localStorage.setItem('clinic-patients', JSON.stringify(this.patients));
+      localStorage.setItem('clinic-appointments', JSON.stringify(this.appointments));
+    } catch {
+      // ignore storage errors
+    }
   }
 
   // Doctor operations (password included)
@@ -19,9 +39,11 @@ class DataStore {
       ...doctor, 
       id: generateId(), 
       createdAt: new Date().toISOString().split('T')[0],
-      role: 'doctor' // Explicit role
+      role: 'doctor', // Explicit role
+      password: 'doc123'
     };
     this.doctors.push(newDoctor);
+    this._saveToStorage();
     return newDoctor;
   };
 
@@ -29,6 +51,7 @@ class DataStore {
     const index = this.doctors.findIndex(d => d.id === id);
     if (index !== -1) {
       this.doctors[index] = { ...this.doctors[index], ...updates };
+      this._saveToStorage();
       return this.doctors[index];
     }
     return null;
@@ -38,6 +61,7 @@ class DataStore {
     const index = this.doctors.findIndex(d => d.id === id);
     if (index !== -1) {
       this.doctors.splice(index, 1);
+      this._saveToStorage();
       return true;
     }
     return false;
@@ -53,9 +77,11 @@ class DataStore {
       ...patient, 
       id: generateId(), 
       registrationDate: new Date().toISOString().split('T')[0],
-      role: 'patient' // Explicit role
+      role: 'patient', // Explicit role
+      password: 'pat123'
     };
     this.patients.push(newPatient);
+    this._saveToStorage();
     return newPatient;
   };
 
@@ -63,6 +89,7 @@ class DataStore {
     const index = this.patients.findIndex(p => p.id === id);
     if (index !== -1) {
       this.patients[index] = { ...this.patients[index], ...updates };
+      this._saveToStorage();
       return this.patients[index];
     }
     return null;
@@ -72,6 +99,7 @@ class DataStore {
     const index = this.patients.findIndex(p => p.id === id);
     if (index !== -1) {
       this.patients.splice(index, 1);
+      this._saveToStorage();
       return true;
     }
     return false;
@@ -89,7 +117,7 @@ class DataStore {
     return [admin, ...this.doctors, ...this.patients];
   };
 
-  // Appointment operations (unchanged)
+  // Appointment operations
   getAppointments = () => [...this.appointments];
 
   getAppointmentById = (id) => this.appointments.find(a => a.id === id);
@@ -107,6 +135,7 @@ class DataStore {
       createdAt: new Date().toISOString().split('T')[0]
     };
     this.appointments.push(newAppointment);
+    this._saveToStorage();
     return newAppointment;
   };
 
@@ -114,6 +143,7 @@ class DataStore {
     const index = this.appointments.findIndex(a => a.id === id);
     if (index !== -1) {
       this.appointments[index] = { ...this.appointments[index], ...updates };
+      this._saveToStorage();
       return this.appointments[index];
     }
     return null;
@@ -123,6 +153,7 @@ class DataStore {
     const index = this.appointments.findIndex(a => a.id === id);
     if (index !== -1) {
       this.appointments.splice(index, 1);
+      this._saveToStorage();
       return true;
     }
     return false;
@@ -149,3 +180,4 @@ class DataStore {
 // Create singleton instance
 const dataStore = new DataStore();
 export default dataStore;
+
