@@ -7,6 +7,13 @@ class DataStore {
     this.doctors = this._loadFromStorage('doctors') || [...initialDoctors];
     this.patients = this._loadFromStorage('patients') || [...initialPatients];
     this.appointments = this._loadFromStorage('appointments') || [...initialAppointments];
+    this.admin = this._loadFromStorage('admin') || {
+      id: 'admin1',
+      role: 'admin',
+      email: 'ishimwe@clinic.com',
+      name: 'Ishimwe',
+      password: 'admin123'
+    };
     this._saveToStorage();
   }
 
@@ -24,6 +31,7 @@ class DataStore {
       localStorage.setItem('clinic-doctors', JSON.stringify(this.doctors));
       localStorage.setItem('clinic-patients', JSON.stringify(this.patients));
       localStorage.setItem('clinic-appointments', JSON.stringify(this.appointments));
+      localStorage.setItem('clinic-admin', JSON.stringify(this.admin));
     } catch {
       // ignore storage errors
     }
@@ -105,16 +113,18 @@ class DataStore {
     return false;
   };
 
+  // Admin operations
+  getAdmin = () => ({ ...this.admin });
+
+  updateAdmin = (updates) => {
+    this.admin = { ...this.admin, ...updates };
+    this._saveToStorage();
+    return { ...this.admin };
+  };
+
   // Get all users for auth (patients + doctors + admin)
   getAllUsers = () => {
-    const admin = {
-      id: 'admin1',
-      role: 'admin',
-      email: 'ishimwe@clinic.com',
-      name: 'Ishimwe',
-      password: 'admin123'
-    };
-    return [admin, ...this.doctors, ...this.patients];
+    return [{ ...this.admin }, ...this.doctors, ...this.patients];
   };
 
   // Appointment operations

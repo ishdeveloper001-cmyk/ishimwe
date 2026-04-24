@@ -5,7 +5,7 @@ import {
 import { CalendarMonth, School, Work, Phone, Email, AccessTime } from '@mui/icons-material';
 import { formatDate } from '../../utils/validation.jsx';
 
-const DoctorViewModal = ({ open, onClose, doctor }) => {
+const DoctorViewModal = ({ open, onClose, doctor, user }) => {
   if (!doctor) return null;
   const appointments = doctor.appointments || [];
   const upcomingAppointments = appointments.filter((apt) => apt.status === 'scheduled').sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
@@ -70,6 +70,16 @@ const DoctorViewModal = ({ open, onClose, doctor }) => {
             <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 600 }}><CalendarMonth color="primary" sx={{ mr: 1, verticalAlign: 'middle' }} />Upcoming Schedule</Typography>
             {upcomingAppointments.length > 0 ? <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>{upcomingAppointments.map((apt) => <Box key={apt.id} sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s', '&:hover': { bgcolor: 'action.selected' } }}><Box><Typography variant="body2" sx={{ fontWeight: 600 }}>{formatDate(apt.date)}</Typography><Typography variant="caption" color="text.secondary">{apt.time} ({apt.duration} min)</Typography></Box><Chip label={apt.status} size="small" color={apt.status === 'scheduled' ? 'info' : 'default'} sx={{ borderRadius: 2 }} /></Box>)}</Box> : <Typography variant="body2" color="text.secondary">No upcoming appointments scheduled</Typography>}
           </Box>
+
+          {user?.role === 'admin' && (
+            <><Divider /><Box className="doctor-profile-details">
+              <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 600 }}>Account Credentials (Admin Only)</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography><strong>Password:</strong> <Chip label={doctor.password || '***'} size="small" color="info" variant="outlined" sx={{ ml: 1 }} /></Typography>
+                <Typography><strong>Last Changed:</strong> {doctor.passwordChangedAt ? formatDate(doctor.passwordChangedAt) : 'Original (never changed)'}</Typography>
+              </Box>
+            </Box></>
+          )}
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}><Button onClick={onClose} variant="outlined" sx={{ borderRadius: 2 }}>Close</Button></DialogActions>

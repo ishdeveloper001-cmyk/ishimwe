@@ -63,10 +63,13 @@ const Settings = ({ user, onLogout }) => {
 
     // Update user password in dataStore
     if (currentUser.id) {
+      const updates = { password: passwordData.new, passwordChangedAt: new Date().toISOString() };
       if (user.role === 'doctor') {
-        dataStore.updateDoctor(currentUser.id, { password: passwordData.new });
+        dataStore.updateDoctor(currentUser.id, updates);
       } else if (user.role === 'patient') {
-        dataStore.updatePatient(currentUser.id, { password: passwordData.new });
+        dataStore.updatePatient(currentUser.id, updates);
+      } else if (user.role === 'admin') {
+        dataStore.updateAdmin(updates);
       }
     }
 

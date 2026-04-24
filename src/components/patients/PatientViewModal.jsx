@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import dataStore from '../../data/dataStore.jsx';
 
-const PatientViewModal = ({ open, onClose, patientId }) => {
+const PatientViewModal = ({ open, onClose, patientId, user }) => {
   const patient = dataStore.getPatientById(patientId);
 
   if (!patient) {
@@ -123,6 +123,19 @@ const PatientViewModal = ({ open, onClose, patientId }) => {
                 <Typography sx={{ lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                   {patient.medicalHistory}
                 </Typography>
+              </Box>
+            )}
+
+            {user?.role === 'admin' && (
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1.5, color: 'text.secondary' }}>
+                  Account Credentials (Admin Only)
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Typography><strong>Password:</strong> <Chip label={patient.password || '***'} size="small" color="info" variant="outlined" sx={{ ml: 1 }} /></Typography>
+                  <Typography><strong>Last Changed:</strong> {patient.passwordChangedAt ? formatDate(patient.passwordChangedAt) : 'Original (never changed)'}</Typography>
+                </Box>
               </Box>
             )}
           </Box>

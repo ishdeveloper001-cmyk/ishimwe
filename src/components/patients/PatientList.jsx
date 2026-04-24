@@ -173,7 +173,7 @@ const PatientList = ({ user }) => {
       </Paper>
       <PatientForm open={formOpen} onClose={() => { setFormOpen(false); setSelectedPatient(null); }} onSave={() => { loadPatients(); setFormOpen(false); setSelectedPatient(null); }} patient={selectedPatient} />
       <ConfirmDialog open={deleteDialogOpen && !isDoctor} onClose={() => setDeleteDialogOpen(false)} onConfirm={() => { if (patientToDelete) { dataStore.deletePatient(patientToDelete.id); loadPatients(); setPatientToDelete(null); } }} title="Delete Patient" message={`Are you sure you want to delete ${patientToDelete?.name}? This action cannot be undone.`} confirmText="Delete" type="danger" />
-      <PatientViewModal open={viewModalOpen} onClose={() => { setViewModalOpen(false); setSelectedViewPatient(null); }} patientId={selectedViewPatient} />
+      <PatientViewModal open={viewModalOpen} onClose={() => { setViewModalOpen(false); setSelectedViewPatient(null); }} patientId={selectedViewPatient} user={user} />
     </Box>
   );
 };

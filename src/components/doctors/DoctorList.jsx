@@ -331,6 +331,7 @@ const DoctorList = ({ user }) => {
         open={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         doctor={selectedDoctor}
+        user={user}
       />
 
       <ConfirmDialog
