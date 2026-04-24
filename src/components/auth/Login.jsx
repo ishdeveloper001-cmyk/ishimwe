@@ -103,18 +103,6 @@ const Login = ({ onLogin }) => {
           >
             Sign In
           </Button>
-
-          {/* {/* <Box mt={3}>
-             <Typography variant="subtitle2" mb={1} sx={{ fontWeight: 600, textAlign: 'center' }}>
-               Sample credentials
-             </Typography>
-             <Typography variant="caption" display="block" sx={{ textAlign: 'center', mb: 0.5 }}>
-               Admin: ishimwe@clinic.com / admin123
-             </Typography>
-             <Typography variant="caption" display="block" sx={{ textAlign: 'center', mb: 0.5 }}>
-               Use mock doctors/patients from lists
-             </Typography>
-           </Box> */}
         </Box> 
       </Paper>
     </Box>

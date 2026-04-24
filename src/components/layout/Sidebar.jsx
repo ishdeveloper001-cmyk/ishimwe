@@ -133,8 +133,6 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
       )}
     </Box>
   );
-
-  // Mobile drawer
   if (isMobile) {
     return (
       <Drawer
@@ -161,8 +159,6 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse, user }) => {
       </Drawer>
     );
   }
-
-  // Desktop drawer
   return (
     <Drawer
       variant="permanent"
