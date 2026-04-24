@@ -104,7 +104,7 @@ const Login = ({ onLogin }) => {
             Sign In
           </Button>
 
-          <Box mt={3}>
+          {/* {/* <Box mt={3}>
              <Typography variant="subtitle2" mb={1} sx={{ fontWeight: 600, textAlign: 'center' }}>
                Sample credentials
              </Typography>
@@ -114,8 +114,8 @@ const Login = ({ onLogin }) => {
              <Typography variant="caption" display="block" sx={{ textAlign: 'center', mb: 0.5 }}>
                Use mock doctors/patients from lists
              </Typography>
-           </Box>
-        </Box>
+           </Box> */}
+        </Box> 
       </Paper>
     </Box>
   );
