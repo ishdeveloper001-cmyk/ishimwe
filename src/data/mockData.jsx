@@ -1,6 +1,4 @@
 import { generateId } from '../utils/validation.jsx';
-
-// Initial mock data for doctors (added password)
 export const initialDoctors = [
   {
     id: 'd1',
@@ -180,8 +178,6 @@ export const initialPatients = [
     registrationDate: '2024-03-15',
   },
 ];
-
-// Initial mock data for appointments
 export const initialAppointments = [
   {
     id: 'a1',
@@ -195,7 +191,6 @@ export const initialAppointments = [
     notes: 'Patient has family history of heart disease',
     createdAt: '2026-03-20',
   },
-  // ... (rest unchanged)
   {
     id: 'a8',
     patientId: 'p3',

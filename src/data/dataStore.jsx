@@ -74,8 +74,6 @@ class DataStore {
     }
     return false;
   };
-
-  // Patient operations (password included)
   getPatients = () => [...this.patients];
 
   getPatientById = (id) => this.patients.find(p => p.id === id);
@@ -112,8 +110,6 @@ class DataStore {
     }
     return false;
   };
-
-  // Admin operations
   getAdmin = () => ({ ...this.admin });
 
   updateAdmin = (updates) => {
@@ -121,13 +117,9 @@ class DataStore {
     this._saveToStorage();
     return { ...this.admin };
   };
-
-  // Get all users for auth (patients + doctors + admin)
   getAllUsers = () => {
     return [{ ...this.admin }, ...this.doctors, ...this.patients];
   };
-
-  // Appointment operations
   getAppointments = () => [...this.appointments];
 
   getAppointmentById = (id) => this.appointments.find(a => a.id === id);
@@ -168,8 +160,6 @@ class DataStore {
     }
     return false;
   };
-
-  // Check for appointment conflicts
   hasConflict = (doctorId, date, time, duration, excludeId = null) => {
     const newStart = new Date(`${date}T${time}`);
     const newEnd = new Date(newStart.getTime() + duration * 60000);

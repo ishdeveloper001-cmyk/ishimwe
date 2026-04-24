@@ -152,7 +152,7 @@ const Dashboard = () => {
                 backgroundClip: 'text'
               }}
             >
-              Welcome Back! 👋
+              Welcome
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Here's what's happening with your clinic today
