@@ -1,19 +1,56 @@
 import { generateId } from '../utils/validation.jsx';
 import { initialDoctors, initialPatients, initialAppointments } from './mockData.jsx';
 
+export const DEFAULT_SECURITY_QUESTION = 'What is the vision of our clinic?';
+export const DEFAULT_SECURITY_ANSWER = '2070';
+export const SECURITY_QUESTION_OPTIONS = [
+  'What is your nick name?',
+  'When is your birth day?',
+  'What is your former school?'
+];
+export const APPOINTMENT_STATUS_OPTIONS = ['pending', 'approved', 'scheduled', 'completed', 'cancelled'];
+
+const normalizeSecurityProfile = (user) => {
+  if (!user) return user;
+
+  if (user.role === 'admin') {
+    return {
+      ...user,
+      role: 'admin',
+      securityQuestion: user.securityQuestion || 'What is your nickname?',
+      securityAnswer: user.securityAnswer || ''
+    };
+  }
+
+  return {
+    ...user,
+    role: user.role || 'patient',
+    securityQuestion: user.securityQuestion || DEFAULT_SECURITY_QUESTION,
+    securityAnswer: user.securityAnswer || DEFAULT_SECURITY_ANSWER
+  };
+};
+
 // Data store class - Added password support for patients/doctors + localStorage persistence
 class DataStore {
   constructor() {
-    this.doctors = this._loadFromStorage('doctors') || [...initialDoctors];
-    this.patients = this._loadFromStorage('patients') || [...initialPatients];
+    this.doctors = (this._loadFromStorage('doctors') || [...initialDoctors]).map((doctor) => ({
+      ...normalizeSecurityProfile(doctor),
+      role: doctor?.role || 'doctor'
+    }));
+    this.patients = (this._loadFromStorage('patients') || [...initialPatients]).map((patient) => ({
+      ...normalizeSecurityProfile(patient),
+      role: patient?.role || 'patient'
+    }));
     this.appointments = this._loadFromStorage('appointments') || [...initialAppointments];
-    this.admin = this._loadFromStorage('admin') || {
+    this.admin = normalizeSecurityProfile(this._loadFromStorage('admin') || {
       id: 'admin1',
       role: 'admin',
       email: 'ishimwe@clinic.com',
       name: 'Ishimwe',
-      password: 'admin123'
-    };
+      password: 'admin123',
+      securityQuestion: 'What is your nickname?',
+      securityAnswer: 'Ishimwe'
+    });
     this._saveToStorage();
   }
 
@@ -37,18 +74,44 @@ class DataStore {
     }
   }
 
+  generateClinicEmail = (fullName, preferredEmail = '') => {
+    const source = (preferredEmail || fullName || '').trim();
+    const localPart = String(source)
+      .toLowerCase()
+      .replace(/@clinic\.com$/i, '')
+      .replace(/\s+/g, '.')
+      .replace(/[^a-z0-9._-]/g, '')
+      .replace(/\.+/g, '.')
+      .replace(/^\.|\.$/g, '') || 'doctor';
+
+    let candidate = `${localPart}@clinic.com`;
+    let counter = 1;
+    const existingEmails = new Set(this.getAllUsers().map(user => user.email && user.email.toLowerCase()));
+
+    while (existingEmails.has(candidate.toLowerCase())) {
+      candidate = `${localPart}${counter}@clinic.com`;
+      counter += 1;
+    }
+
+    return candidate;
+  };
+
   // Doctor operations (password included)
   getDoctors = () => [...this.doctors];
 
   getDoctorById = (id) => this.doctors.find(d => d.id === id);
 
   addDoctor = (doctor) => {
+    const email = this.generateClinicEmail(doctor?.name || '', doctor?.email || '');
     const newDoctor = { 
-      ...doctor, 
+      ...doctor,
+      email,
       id: generateId(), 
       createdAt: new Date().toISOString().split('T')[0],
       role: 'doctor', // Explicit role
-      password: 'doc123'
+      password: doctor?.password || 'doc123',
+      securityQuestion: doctor?.securityQuestion || DEFAULT_SECURITY_QUESTION,
+      securityAnswer: doctor?.securityAnswer || DEFAULT_SECURITY_ANSWER
     };
     this.doctors.push(newDoctor);
     this._saveToStorage();
@@ -82,11 +145,13 @@ class DataStore {
 
   addPatient = (patient) => {
     const newPatient = { 
-      ...patient, 
+      ...patient,
       id: generateId(), 
       registrationDate: new Date().toISOString().split('T')[0],
       role: 'patient', // Explicit role
-      password: 'pat123'
+      password: patient?.password || 'pat123',
+      securityQuestion: patient?.securityQuestion || DEFAULT_SECURITY_QUESTION,
+      securityAnswer: patient?.securityAnswer || DEFAULT_SECURITY_ANSWER
     };
     this.patients.push(newPatient);
     this._saveToStorage();
@@ -124,7 +189,39 @@ class DataStore {
 
   // Get all users for auth (patients + doctors + admin)
   getAllUsers = () => {
-    return [{ ...this.admin }, ...this.doctors, ...this.patients];
+    return [
+      normalizeSecurityProfile({ ...this.admin }),
+      ...this.doctors.map((doctor) => ({ ...normalizeSecurityProfile(doctor), role: doctor.role || 'doctor' })),
+      ...this.patients.map((patient) => ({ ...normalizeSecurityProfile(patient), role: patient.role || 'patient' }))
+    ];
+  };
+
+  getUserByEmail = (email) => {
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail) return null;
+    return this.getAllUsers().find(user => user.email && user.email.toLowerCase() === normalizedEmail) || null;
+  };
+
+  updateUserPassword = (email, newPassword) => {
+    const user = this.getUserByEmail(email);
+    if (!user) return null;
+
+    if (user.role === 'admin') {
+      this.admin = { ...this.admin, password: newPassword };
+    } else if (user.role === 'doctor') {
+      const index = this.doctors.findIndex(doctor => doctor.id === user.id);
+      if (index !== -1) {
+        this.doctors[index] = { ...this.doctors[index], password: newPassword };
+      }
+    } else if (user.role === 'patient') {
+      const index = this.patients.findIndex(patient => patient.id === user.id);
+      if (index !== -1) {
+        this.patients[index] = { ...this.patients[index], password: newPassword };
+      }
+    }
+
+    this._saveToStorage();
+    return user;
   };
 
   // Appointment operations
@@ -136,12 +233,20 @@ class DataStore {
 
   getAppointmentsByPatient = (patientId) => this.appointments.filter(a => a.patientId === patientId);
 
+  getAppointmentsForUser = (user) => {
+    if (!user) return [];
+    if (user.role === 'patient') return this.getAppointmentsByPatient(user.id);
+    if (user.role === 'doctor') return this.getAppointmentsByDoctor(user.id);
+    return [...this.appointments];
+  };
+
   getAppointmentsByDate = (date) => this.appointments.filter(a => a.date === date);
 
   addAppointment = (appointment) => {
     const newAppointment = {
       ...appointment,
       id: generateId(),
+      status: APPOINTMENT_STATUS_OPTIONS.includes(appointment?.status) ? appointment.status : 'pending',
       createdAt: new Date().toISOString().split('T')[0]
     };
     this.appointments.push(newAppointment);
@@ -152,11 +257,19 @@ class DataStore {
   updateAppointment = (id, updates) => {
     const index = this.appointments.findIndex(a => a.id === id);
     if (index !== -1) {
-      this.appointments[index] = { ...this.appointments[index], ...updates };
+      this.appointments[index] = {
+        ...this.appointments[index],
+        ...updates,
+        status: APPOINTMENT_STATUS_OPTIONS.includes(updates?.status) ? updates.status : this.appointments[index].status
+      };
       this._saveToStorage();
       return this.appointments[index];
     }
     return null;
+  };
+
+  approveAppointment = (id) => {
+    return this.updateAppointment(id, { status: 'approved' });
   };
 
   deleteAppointment = (id) => {

@@ -38,7 +38,7 @@ const DoctorList = ({ user }) => {
 
   useEffect(() => {
     loadDoctors();
-  }, []);
+  }, [user?.id, user?.role]);
 
   useEffect(() => {
     const filtered = doctors.filter((doctor) =>
@@ -50,7 +50,18 @@ const DoctorList = ({ user }) => {
   }, [searchQuery, doctors]);
 
   const loadDoctors = () => {
-    const data = dataStore.getDoctors();
+    let data = dataStore.getDoctors();
+
+    if (user?.role === 'patient') {
+      const patientDoctorIds = new Set(
+        dataStore
+          .getAppointmentsByPatient(user.id)
+          .map((appointment) => appointment.doctorId)
+          .filter(Boolean)
+      );
+      data = data.filter((doctor) => patientDoctorIds.has(doctor.id));
+    }
+
     setDoctors(data);
     setFilteredDoctors(data);
   };
@@ -162,18 +173,20 @@ const DoctorList = ({ user }) => {
         />
       ),
     },
-    {
-      field: 'password',
-      headerName: 'Password',
-      width: 120,
-      renderCell: (params) => user?.role === 'admin' ? <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> : '***',
-    },
-    {
-      field: 'passwordChangedAt',
-      headerName: 'Pwd Changed',
-      width: 140,
-      renderCell: (params) => user?.role === 'admin' ? (params.value ? <Chip label={`Changed ${formatDate(params.value)}`} size="small" color="success" variant="outlined" /> : <Chip label="Original" size="small" color="default" variant="outlined" />) : '***',
-    },
+    ...(user?.role === 'admin' ? [
+      {
+        field: 'password',
+        headerName: 'Password',
+        width: 120,
+        renderCell: (params) => <Chip label={params.value || '***'} size="small" color="info" variant="outlined" />,
+      },
+      {
+        field: 'passwordChangedAt',
+        headerName: 'Pwd Changed',
+        width: 140,
+        renderCell: (params) => params.value ? <Chip label={`Changed ${formatDate(params.value)}`} size="small" color="success" variant="outlined" /> : <Chip label="Original" size="small" color="default" variant="outlined" />,
+      },
+    ] : []),
     {
       field: 'consultationFee',
       headerName: 'Fee',
@@ -223,7 +236,7 @@ const DoctorList = ({ user }) => {
     <Box>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <TextField
-          placeholder="Search doctors..."
+          placeholder={user?.role === 'patient' ? 'Search my doctors...' : 'Search doctors...'}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           size="small"

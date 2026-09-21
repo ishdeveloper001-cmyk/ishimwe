@@ -22,13 +22,18 @@ const AppointmentList = ({ user }) => {
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'calendar'
   const [pageSize, setPageSize] = useState(10);
 
-  useEffect(() => { loadAppointments(); }, []);
+  useEffect(() => { loadAppointments(); }, [user?.id, user?.role]);
   useEffect(() => {
     const filtered = appointments.filter((apt) => {
       const doctor = dataStore.getDoctorById(apt.doctorId);
       const patient = dataStore.getPatientById(apt.patientId);
       const searchLower = searchQuery.toLowerCase();
-      return (apt.date?.includes(searchQuery) || false) || (apt.time?.includes(searchQuery) || false) || apt.reason.toLowerCase().includes(searchLower) || doctor?.name.toLowerCase().includes(searchLower) || patient?.name.toLowerCase().includes(searchLower);
+      return (apt.date?.includes(searchQuery) || false) ||
+        (apt.time?.includes(searchQuery) || false) ||
+        (apt.reason?.toLowerCase().includes(searchLower) || false) ||
+        (doctor?.name?.toLowerCase().includes(searchLower) || false) ||
+        (patient?.name?.toLowerCase().includes(searchLower) || false) ||
+        (apt.status?.toLowerCase().includes(searchLower) || false);
     });
     setFilteredAppointments(filtered);
   }, [searchQuery, appointments]);
@@ -36,9 +41,8 @@ const AppointmentList = ({ user }) => {
   const loadAppointments = async () => {
     setLoading(true);
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const data = dataStore.getAppointments();
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const data = dataStore.getAppointmentsForUser(user);
       const enrichedData = data.map((apt) => ({ 
         ...apt, 
         doctorName: dataStore.getDoctorById(apt.doctorId)?.name || 'Unknown', 
@@ -84,7 +88,23 @@ const AppointmentList = ({ user }) => {
 
   const formatDate = (dateString) => { if (!dateString) return 'N/A'; return new Date(dateString).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }); };
   const formatTime = (timeString) => { if (!timeString) return 'N/A'; const [hours, minutes] = timeString.split(':'); const hour = parseInt(hours, 10); const ampm = hour >= 12 ? 'PM' : 'AM'; const hour12 = hour % 12 || 12; return `${hour12}:${minutes} ${ampm}`; };
-  const getStatusColor = (status) => { switch (status) { case 'scheduled': return 'info'; case 'completed': return 'success'; case 'cancelled': return 'error'; case 'in-progress': return 'warning'; default: return 'default'; } };
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'pending': return 'Pending approval';
+      case 'approved': return 'Approved';
+      case 'scheduled': return 'Scheduled';
+      case 'completed': return 'Completed';
+      case 'cancelled': return 'Cancelled';
+      default: return 'Unknown';
+    }
+  };
+  const getStatusColor = (status) => { switch (status) { case 'pending': return 'warning'; case 'approved': return 'success'; case 'scheduled': return 'info'; case 'completed': return 'success'; case 'cancelled': return 'error'; default: return 'default'; } };
+
+  const handleApproveAppointment = (appointment) => {
+    dataStore.approveAppointment(appointment.id);
+    loadAppointments();
+    showNotification('Appointment approved successfully', 'success');
+  };
 
   const columns = [
     { field: 'date', headerName: 'Date', width: 140, renderCell: (params) => formatDate(params.value) },
@@ -93,14 +113,23 @@ const AppointmentList = ({ user }) => {
     { field: 'doctorName', headerName: 'Doctor', flex: 1, minWidth: 150, renderCell: (params) => <Box><Typography variant="body2" sx={{ fontWeight: 600 }}>{params.value}</Typography><Typography variant="caption" color="text.secondary">{params.row.doctorSpecialization}</Typography></Box> },
     { field: 'reason', headerName: 'Reason', flex: 1, minWidth: 180, renderCell: (params) => <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{params.value}</Typography> },
     { field: 'duration', headerName: 'Duration', width: 100, renderCell: (params) => `${params.value} min` },
-    { field: 'status', headerName: 'Status', width: 120, renderCell: (params) => <Chip label={params.value} size="small" color={getStatusColor(params.value)} variant="filled" /> },
-    { field: 'actions', type: 'actions', headerName: 'Actions', width: 180, getActions: (params) => {
+    { field: 'status', headerName: 'Status', width: 150, renderCell: (params) => <Chip label={getStatusLabel(params.value)} size="small" color={getStatusColor(params.value)} variant="filled" /> },
+    { field: 'actions', type: 'actions', headerName: 'Actions', width: 220, getActions: (params) => {
       const actions = [
         <GridActionsCellItem key="view" icon={<Visibility />} label="View" onClick={() => { setSelectedAppointment(params.row); setViewModalOpen(true); }} />,
       ];
-      if (user?.role === 'admin') {
+      if (user?.role === 'doctor' && params.row.status === 'pending') {
+        actions.push(
+          <GridActionsCellItem key="approve" icon={<CalendarToday />} label="Approve" onClick={() => handleApproveAppointment(params.row)} sx={{ color: 'success.main' }} />,
+        );
+      }
+      if (user?.role === 'admin' || user?.role === 'doctor') {
         actions.push(
           <GridActionsCellItem key="edit" icon={<Edit />} label="Edit" onClick={() => { setSelectedAppointment(params.row); setFormOpen(true); }} />,
+        );
+      }
+      if (user?.role === 'admin' || user?.role === 'patient') {
+        actions.push(
           <GridActionsCellItem key="delete" icon={<Delete />} label="Delete" onClick={() => { setAppointmentToDelete(params.row); setDeleteDialogOpen(true); }} sx={{ color: 'error.main' }} />,
         );
       }
@@ -154,7 +183,7 @@ const AppointmentList = ({ user }) => {
           >
             Export
           </Button>
-          {user?.role === 'admin' && (
+          {(user?.role === 'admin' || user?.role === 'patient') && (
             <Button 
               variant="contained" 
               startIcon={<Add />} 
@@ -171,7 +200,7 @@ const AppointmentList = ({ user }) => {
                 },
               }}
             >
-              Book Appointment
+              {user?.role === 'patient' ? 'Request Appointment' : 'Book Appointment'}
             </Button>
           )}
         </Box>
@@ -298,7 +327,7 @@ const AppointmentList = ({ user }) => {
           </Box>
         )}
       </Paper>
-      <AppointmentForm open={formOpen} onClose={() => { setFormOpen(false); setSelectedAppointment(null); }} onSave={() => { loadAppointments(); setFormOpen(false); setSelectedAppointment(null); showNotification(selectedAppointment ? 'Appointment updated successfully' : 'Appointment created successfully', 'success'); }} appointment={selectedAppointment} onConflictError={(message) => showNotification(message, 'error')} />
+      <AppointmentForm open={formOpen} onClose={() => { setFormOpen(false); setSelectedAppointment(null); }} onSave={() => { loadAppointments(); setFormOpen(false); setSelectedAppointment(null); showNotification(selectedAppointment ? 'Appointment updated successfully' : 'Appointment request created successfully', 'success'); }} appointment={selectedAppointment} onConflictError={(message) => showNotification(message, 'error')} user={user} />
       <AppointmentViewModal open={viewModalOpen} onClose={() => { setViewModalOpen(false); setSelectedAppointment(null); }} appointment={selectedAppointment} />
       <ConfirmDialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} onConfirm={() => { if (appointmentToDelete) { dataStore.deleteAppointment(appointmentToDelete.id); loadAppointments(); setAppointmentToDelete(null); showNotification('Appointment cancelled successfully', 'success'); } }} title="Cancel Appointment" message={`Are you sure you want to cancel the appointment for ${appointmentToDelete?.patientName} on ${formatDate(appointmentToDelete?.date)} at ${formatTime(appointmentToDelete?.time)}?`} confirmText="Cancel Appointment" type="danger" />
     </Box>

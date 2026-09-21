@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import dataStore from '../../data/dataStore.jsx';
+import React, { useState, useEffect } from 'react';
+import dataStore, { DEFAULT_SECURITY_QUESTION, DEFAULT_SECURITY_ANSWER, SECURITY_QUESTION_OPTIONS } from '../../data/dataStore.jsx';
 import {
   Box,
   Typography,
@@ -44,6 +44,28 @@ const Settings = ({ user, onLogout }) => {
     new: '',
     confirm: ''
   });
+  const [securityQuestion, setSecurityQuestion] = useState(user?.securityQuestion || DEFAULT_SECURITY_QUESTION);
+  const [securityAnswer, setSecurityAnswer] = useState(user?.securityAnswer || (user?.role !== 'admin' ? DEFAULT_SECURITY_ANSWER : ''));
+
+  useEffect(() => {
+    if (user?.securityQuestion) {
+      setSecurityQuestion(user.securityQuestion);
+    } else if (user?.role !== 'admin') {
+      setSecurityQuestion(DEFAULT_SECURITY_QUESTION);
+    }
+
+    if (user?.securityAnswer) {
+      setSecurityAnswer(user.securityAnswer);
+    } else if (user?.role !== 'admin') {
+      setSecurityAnswer(DEFAULT_SECURITY_ANSWER);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (securityQuestion === DEFAULT_SECURITY_QUESTION && user?.role !== 'admin') {
+      setSecurityAnswer(DEFAULT_SECURITY_ANSWER);
+    }
+  }, [securityQuestion, user]);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -76,6 +98,41 @@ const Settings = ({ user, onLogout }) => {
     showNotification('Password updated successfully! Use your new password for future logins.', 'success');
     setPasswordDialogOpen(false);
     setPasswordData({ current: '', new: '', confirm: '' });
+  };
+
+  const handleSecurityQuestionUpdate = () => {
+    const allUsers = dataStore.getAllUsers();
+    const currentUser = allUsers.find(u => u.email === user.email && u.role === user.role);
+
+    if (!currentUser) {
+      showNotification('User account could not be found.', 'error');
+      return;
+    }
+
+    const selectedQuestion = securityQuestion || DEFAULT_SECURITY_QUESTION;
+    const answer = (selectedQuestion === DEFAULT_SECURITY_QUESTION && user?.role !== 'admin')
+      ? DEFAULT_SECURITY_ANSWER
+      : String(securityAnswer || '').trim();
+
+    if (!answer) {
+      showNotification('Please enter the answer for your security question.', 'error');
+      return;
+    }
+
+    const updates = {
+      securityQuestion: selectedQuestion,
+      securityAnswer: answer
+    };
+
+    if (currentUser.role === 'doctor') {
+      dataStore.updateDoctor(currentUser.id, updates);
+    } else if (currentUser.role === 'patient') {
+      dataStore.updatePatient(currentUser.id, updates);
+    } else if (currentUser.role === 'admin') {
+      dataStore.updateAdmin(updates);
+    }
+
+    showNotification('Security question updated successfully.', 'success');
   };
 
   return (
@@ -160,6 +217,45 @@ const Settings = ({ user, onLogout }) => {
                   onClick={() => setPasswordDialogOpen(true)}
                 >
                   Update
+                </Button>
+              </ListItem>
+              <ListItem sx={{ display: 'block', alignItems: 'flex-start', px: 0 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>Security Question</Typography>
+                <TextField
+                  select
+                  fullWidth
+                  label="Question"
+                  value={securityQuestion}
+                  onChange={(e) => setSecurityQuestion(e.target.value)}
+                  sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                >
+                  {(user?.role === 'admin'
+                    ? SECURITY_QUESTION_OPTIONS
+                    : [DEFAULT_SECURITY_QUESTION, ...SECURITY_QUESTION_OPTIONS]
+                  ).map((question) => (
+                    <MuiMenuItem key={question} value={question}>{question}</MuiMenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  fullWidth
+                  label="Answer"
+                  value={securityAnswer}
+                  onChange={(e) => setSecurityAnswer(e.target.value)}
+                  sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={handleSecurityQuestionUpdate}
+                  sx={{
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)',
+                    },
+                  }}
+                >
+                  Save Security
                 </Button>
               </ListItem>
             </List>

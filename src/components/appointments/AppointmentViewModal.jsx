@@ -27,10 +27,11 @@ const AppointmentViewModal = ({ open, onClose, appointment }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'pending': return 'warning';
+      case 'approved': return 'success';
       case 'scheduled': return 'info';
       case 'completed': return 'success';
       case 'cancelled': return 'error';
-      case 'in-progress': return 'warning';
       default: return 'default';
     }
   };

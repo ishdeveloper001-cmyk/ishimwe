@@ -17,8 +17,9 @@ import {
   OutlinedInput,
   Checkbox,
   ListItemText,
+  Alert,
 } from '@mui/material';
-import dataStore from '../../data/dataStore.jsx';
+import dataStore, { DEFAULT_SECURITY_QUESTION, DEFAULT_SECURITY_ANSWER, SECURITY_QUESTION_OPTIONS } from '../../data/dataStore.jsx';
 import { validateEmail, validatePhone, validateRequired } from '../../utils/validation.jsx';
 import ImageUpload from '../common/ImageUpload.jsx';
 
@@ -42,6 +43,8 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
     rating: '', consultationFee: '', status: 'available', education: '',
     workHistory: '', profileImage: null, availability: [],
     workingHours: { start: '09:00', end: '17:00' },
+    securityQuestion: DEFAULT_SECURITY_QUESTION,
+    securityAnswer: DEFAULT_SECURITY_ANSWER,
   });
   const [errors, setErrors] = useState({});
   const [imageError, setImageError] = useState('');
@@ -49,7 +52,12 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
 
   useEffect(() => {
     if (doctor) {
-      setFormData({ ...doctor, profileImage: doctor.profileImage || null });
+      setFormData({
+        ...doctor,
+        profileImage: doctor.profileImage || null,
+        securityQuestion: doctor.securityQuestion || DEFAULT_SECURITY_QUESTION,
+        securityAnswer: doctor.securityAnswer || DEFAULT_SECURITY_ANSWER,
+      });
       setImagePreview(doctor.profileImage || null);
     } else {
       resetForm();
@@ -62,6 +70,8 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
       rating: '', consultationFee: '', status: 'available', education: '',
       workHistory: '', profileImage: null, availability: [],
       workingHours: { start: '09:00', end: '17:00' },
+      securityQuestion: DEFAULT_SECURITY_QUESTION,
+      securityAnswer: DEFAULT_SECURITY_ANSWER,
     });
     setErrors({});
     setImageError('');
@@ -103,8 +113,12 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
     const newErrors = {};
     const nameValidation = validateRequired(formData.name, 'Name');
     if (!nameValidation.isValid) newErrors.name = nameValidation.error;
-    const emailValidation = validateEmail(formData.email);
-    if (!emailValidation.isValid) newErrors.email = emailValidation.error;
+    const emailName = String(formData.email || '').trim();
+    if (!emailName) {
+      newErrors.email = 'Email name is required';
+    } else if (emailName.includes('@')) {
+      newErrors.email = 'Please enter the name only; the system will add @clinic.com';
+    }
     const phoneValidation = validatePhone(formData.phone);
     if (!phoneValidation.isValid) newErrors.phone = phoneValidation.error;
     const specValidation = validateRequired(formData.specialization, 'Specialization');
@@ -117,6 +131,10 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
     else if (isNaN(formData.consultationFee) || Number(formData.consultationFee) < 0) newErrors.consultationFee = 'Fee must be a positive number';
     const eduValidation = validateRequired(formData.education, 'Education');
     if (!eduValidation.isValid) newErrors.education = eduValidation.error;
+    const securityQuestionValidation = validateRequired(formData.securityQuestion, 'Security Question');
+    if (!securityQuestionValidation.isValid) newErrors.securityQuestion = securityQuestionValidation.error;
+    const securityAnswerValidation = validateRequired(formData.securityAnswer, 'Security Answer');
+    if (!securityAnswerValidation.isValid) newErrors.securityAnswer = securityAnswerValidation.error;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -125,6 +143,7 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
     if (!validateForm()) return;
     const doctorData = {
       ...formData,
+      email: isEdit ? formData.email : dataStore.generateClinicEmail(formData.name, formData.email),
       experience: Number(formData.experience),
       rating: Number(formData.rating) || 0,
       consultationFee: Number(formData.consultationFee),
@@ -157,7 +176,16 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
               <TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} error={Boolean(errors.name)} helperText={errors.name} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Email Address" type="email" value={formData.email} onChange={handleChange('email')} error={Boolean(errors.email)} helperText={errors.email} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+              <TextField
+                fullWidth
+                label="Email Name"
+                value={formData.email}
+                onChange={handleChange('email')}
+                error={Boolean(errors.email)}
+                helperText={errors.email || 'Enter name only; @clinic.com will be added automatically'}
+                required
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Phone Number" value={formData.phone} onChange={handleChange('phone')} error={Boolean(errors.phone)} helperText={errors.phone} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
@@ -187,6 +215,16 @@ const DoctorForm = ({ open, onClose, onSave, doctor }) => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Rating (0-5)" type="number" value={formData.rating} onChange={handleChange('rating')} inputProps={{ min: 0, max: 5, step: 0.1 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+            </Grid>
+            <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Security for Password Reset</Typography></Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth select label="Security Question" value={formData.securityQuestion} onChange={handleChange('securityQuestion')} error={Boolean(errors.securityQuestion)} helperText={errors.securityQuestion} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                {SECURITY_QUESTION_OPTIONS.map((question) => <MenuItem key={question} value={question}>{question}</MenuItem>)}
+                <MenuItem value={DEFAULT_SECURITY_QUESTION}>{DEFAULT_SECURITY_QUESTION}</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth label="Security Answer" value={formData.securityAnswer} onChange={handleChange('securityAnswer')} error={Boolean(errors.securityAnswer)} helperText={errors.securityAnswer} required sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
             </Grid>
             <Grid item xs={12}><Divider sx={{ my: 2 }} /><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Professional Information</Typography></Grid>
             <Grid item xs={12}>

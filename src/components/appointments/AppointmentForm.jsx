@@ -4,11 +4,21 @@ import dataStore from '../../data/dataStore.jsx';
 import { validateRequired } from '../../utils/validation.jsx';
 
 const durationOptions = [{ value: 15, label: '15 minutes' }, { value: 30, label: '30 minutes' }, { value: 45, label: '45 minutes' }, { value: 60, label: '1 hour' }, { value: 90, label: '1.5 hours' }, { value: 120, label: '2 hours' }];
-const statusOptions = [{ value: 'scheduled', label: 'Scheduled' }, { value: 'in-progress', label: 'In Progress' }, { value: 'completed', label: 'Completed' }, { value: 'cancelled', label: 'Cancelled' }];
+const statusOptions = [{ value: 'pending', label: 'Pending approval' }, { value: 'approved', label: 'Approved' }, { value: 'scheduled', label: 'Scheduled' }, { value: 'completed', label: 'Completed' }, { value: 'cancelled', label: 'Cancelled' }];
 
-const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError }) => {
+const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError, user }) => {
   const isEdit = Boolean(appointment);
-  const [formData, setFormData] = useState({ patientId: '', doctorId: '', date: '', time: '', duration: 30, status: 'scheduled', reason: '', notes: '' });
+  const getInitialFormState = () => ({
+    patientId: user?.role === 'patient' ? user.id : '',
+    doctorId: '',
+    date: '',
+    time: '',
+    duration: 30,
+    status: 'pending',
+    reason: '',
+    notes: ''
+  });
+  const [formData, setFormData] = useState(getInitialFormState());
   const [errors, setErrors] = useState({});
   const [conflictError, setConflictError] = useState('');
   const [doctors, setDoctors] = useState([]);
@@ -16,14 +26,14 @@ const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError }
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
   const resetForm = () => { 
-    setFormData({ patientId: '', doctorId: '', date: '', time: '', duration: 30, status: 'scheduled', reason: '', notes: '' }); 
+    setFormData(getInitialFormState()); 
     setErrors({}); 
     setConflictError(''); 
     setAvailableTimeSlots([]); 
   };
 
   useEffect(() => { if (open) { setDoctors(dataStore.getDoctors()); setPatients(dataStore.getPatients()); } }, [open]);
-  useEffect(() => { if (appointment) setFormData({ ...appointment }); else resetForm(); }, [appointment, open]);
+  useEffect(() => { if (appointment) setFormData({ ...appointment, patientId: appointment.patientId || (user?.role === 'patient' ? user.id : '') }); else resetForm(); }, [appointment, open, user]);
 
   const generateTimeSlots = useCallback(() => {
     const doctor = dataStore.getDoctorById(formData.doctorId);
@@ -69,7 +79,12 @@ const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError }
   const handleSubmit = () => {
     if (!validateForm()) return;
     if (checkConflict()) { onConflictError?.('Time slot conflict detected. Please select a different time.'); return; }
-    const appointmentData = { ...formData, duration: Number(formData.duration) };
+    const appointmentData = {
+      ...formData,
+      patientId: user?.role === 'patient' ? user.id : formData.patientId,
+      duration: Number(formData.duration),
+      status: formData.status || 'pending'
+    };
     if (isEdit) dataStore.updateAppointment(appointment.id, appointmentData);
     else dataStore.addAppointment(appointmentData);
     onSave();
@@ -98,12 +113,18 @@ const AppointmentForm = ({ open, onClose, onSave, appointment, onConflictError }
           {conflictError && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{conflictError}</Alert>}
           <Grid container spacing={3}>
             <Grid item xs={12}><Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>Appointment Details</Typography></Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth error={Boolean(errors.patientId)}><InputLabel>Patient *</InputLabel>
-                <Select value={formData.patientId} onChange={handleChange('patientId')} label="Patient *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{patients.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}</Select>
-                {errors.patientId && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.patientId}</Typography>}
-              </FormControl>
-            </Grid>
+            {!user || user.role !== 'patient' ? (
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth error={Boolean(errors.patientId)}><InputLabel>Patient *</InputLabel>
+                  <Select value={formData.patientId} onChange={handleChange('patientId')} label="Patient *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{patients.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}</Select>
+                  {errors.patientId && <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>{errors.patientId}</Typography>}
+                </FormControl>
+              </Grid>
+            ) : (
+              <Grid item xs={12} md={6}>
+                <TextField fullWidth label="Patient" value={user.name} InputProps={{ readOnly: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+              </Grid>
+            )}
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={Boolean(errors.doctorId)}><InputLabel>Doctor *</InputLabel>
                 <Select value={formData.doctorId} onChange={handleChange('doctorId')} label="Doctor *" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>{doctors.map((d) => <MenuItem key={d.id} value={d.id}>{d.name} - {d.specialization}</MenuItem>)}</Select>
