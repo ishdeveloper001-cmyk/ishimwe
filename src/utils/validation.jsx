@@ -1,8 +1,8 @@
 // Email validation regex pattern
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Phone validation regex pattern (international format)
-export const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+// Phone validation regex pattern for Rwanda mobile numbers
+export const phoneRegex = /^(?:\+250|250)?(?:7(?:8|9|2|3))[0-9]{7}$/;
 
 // Image type validation
 export const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -26,9 +26,12 @@ export const validatePhone = (phone) => {
   if (!phone || phone.trim() === '') {
     return { isValid: false, error: 'Phone number is required' };
   }
-  if (!phoneRegex.test(phone)) {
-    return { isValid: false, error: 'Please enter a valid phone number' };
+
+  const normalizedPhone = phone.trim().replace(/\s+/g, '');
+  if (!phoneRegex.test(normalizedPhone)) {
+    return { isValid: false, error: 'Phone number must start with 078, 079, 072 or 073' };
   }
+
   return { isValid: true, error: '' };
 };
 
