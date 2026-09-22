@@ -41,32 +41,112 @@ const Header = ({ onMenuClick, onLogout, user }) => {
   const doctors = dataStore.getDoctors();
   const patients = dataStore.getPatients();
 
-  const [notifications, setNotifications] = React.useState([
-    {
-      id: 1,
-      title: 'New Appointment',
-      message: `${doctors.find((d) => d.id === 'd2')?.name || 'Dr. Paul Niyonzima'} has a new appointment with ${patients.find((p) => p.id === 'p1')?.name || 'Jean Baptiste Uwimana'}`,
-      time: '5 mins ago',
-      read: false,
-      type: 'appointment',
-    },
-    {
-      id: 2,
-      title: 'Patient Registered',
-      message: `New patient ${patients.find((p) => p.id === 'p2')?.name || 'Marie Mukamana'} has registered in the system`,
-      time: '1 hour ago',
-      read: false,
-      type: 'patient',
-    },
-    {
-      id: 3,
-      title: 'Doctor Available',
-      message: `${doctors.find((d) => d.id === 'd4')?.name || 'Dr. Joseph Bizimana'} is now available for consultations`,
-      time: '2 hours ago',
-      read: true,
-      type: 'doctor',
-    },
-  ]);
+  const buildNotifications = React.useCallback(() => {
+    const allAppointments = dataStore.getAppointments();
+    const allPatients = dataStore.getPatients();
+    const allDoctors = dataStore.getDoctors();
+
+    if (user?.role === 'admin') {
+      const pendingRequests = allAppointments
+        .filter((appointment) => appointment.status === 'pending')
+        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+
+      const patientAlerts = allPatients.slice(0, 2).map((patient) => ({
+        id: `patient-${patient.id}`,
+        title: 'Patient Registered',
+        message: `${patient.name} has registered in the system.`,
+        time: 'Recently',
+        read: false,
+        type: 'patient',
+      }));
+
+      const doctorAlerts = allDoctors
+        .filter((doctor) => doctor.status === 'available')
+        .slice(0, 2)
+        .map((doctor) => ({
+          id: `doctor-${doctor.id}`,
+          title: 'Doctor Available',
+          message: `${doctor.name} is available for consultations.`,
+          time: 'Available now',
+          read: true,
+          type: 'doctor',
+        }));
+
+      const pendingAlerts = pendingRequests.slice(0, 5).map((appointment) => {
+        const patient = dataStore.getPatientById(appointment.patientId);
+        const doctor = dataStore.getDoctorById(appointment.doctorId);
+        return {
+          id: `appointment-${appointment.id}`,
+          title: 'Appointment Request',
+          message: `${patient?.name || 'A patient'} requested an appointment with ${doctor?.name || 'a doctor'} on ${new Date(appointment.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.`,
+          time: 'Pending approval',
+          read: false,
+          type: 'appointment',
+          appointmentId: appointment.id,
+        };
+      });
+
+      return [...pendingAlerts, ...patientAlerts, ...doctorAlerts].slice(0, 8);
+    }
+
+    if (user?.role === 'doctor') {
+      const doctorAppointments = allAppointments
+        .filter((appointment) => appointment.doctorId === user.id)
+        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+
+      return doctorAppointments.map((appointment) => {
+        const patient = dataStore.getPatientById(appointment.patientId);
+        const title = appointment.status === 'pending' ? 'Appointment Request' : appointment.status === 'approved' ? 'Appointment Approved' : 'Appointment Update';
+        const message = appointment.status === 'pending'
+          ? `${patient?.name || 'A patient'} requested an appointment for ${new Date(appointment.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${appointment.time}.`
+          : `${patient?.name || 'A patient'} appointment has been updated to ${appointment.status}.`;
+
+        return {
+          id: `doctor-${appointment.id}`,
+          title,
+          message,
+          time: appointment.status === 'pending' ? 'Pending approval' : appointment.status,
+          read: appointment.status !== 'pending',
+          type: 'appointment',
+          appointmentId: appointment.id,
+        };
+      });
+    }
+
+    if (user?.role === 'patient') {
+      const myAppointments = allAppointments
+        .filter((appointment) => appointment.patientId === user.id)
+        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+
+      return myAppointments.map((appointment) => {
+        const doctor = dataStore.getDoctorById(appointment.doctorId);
+        const title = appointment.status === 'pending' ? 'Appointment Pending' : appointment.status === 'approved' ? 'Appointment Approved' : 'Appointment Update';
+        const message = appointment.status === 'pending'
+          ? `Your appointment request with ${doctor?.name || 'your doctor'} is waiting for approval.`
+          : appointment.status === 'approved'
+            ? `Your appointment with ${doctor?.name || 'your doctor'} has been approved.`
+            : `Your appointment with ${doctor?.name || 'your doctor'} was updated to ${appointment.status}.`;
+
+        return {
+          id: `patient-${appointment.id}`,
+          title,
+          message,
+          time: appointment.status,
+          read: appointment.status === 'approved',
+          type: 'appointment',
+          appointmentId: appointment.id,
+        };
+      });
+    }
+
+    return [];
+  }, [user]);
+
+  const [notifications, setNotifications] = React.useState(() => buildNotifications());
+
+  React.useEffect(() => {
+    setNotifications(buildNotifications());
+  }, [buildNotifications]);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -117,7 +197,11 @@ const Header = ({ onMenuClick, onLogout, user }) => {
 
   const handleNotificationClick = (notification) => {
     setNotifications((prev) => prev.map((item) => item.id === notification.id ? { ...item, read: true } : item));
-    showNotification(notification.message, 'info');
+    if (notification.appointmentId && user?.role === 'doctor') {
+      navigate('/appointments');
+    } else {
+      showNotification(notification.message, 'info');
+    }
     setNotificationAnchor(null);
   };
 

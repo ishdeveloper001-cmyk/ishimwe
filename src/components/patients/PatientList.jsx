@@ -19,7 +19,7 @@ const PatientList = ({ user }) => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedViewPatient, setSelectedViewPatient] = useState(null);
 
-  useEffect(() => { loadPatients(); }, []);
+  useEffect(() => { loadPatients(); }, [user?.id, user?.role]);
   useEffect(() => {
     const filtered = patients.filter((p) =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,7 +30,18 @@ const PatientList = ({ user }) => {
   }, [searchQuery, patients]);
 
   const loadPatients = () => {
-    const data = dataStore.getPatients();
+    let data = dataStore.getPatients();
+
+    if (user?.role === 'doctor') {
+      const patientIds = new Set(
+        dataStore
+          .getAppointmentsByDoctor(user.id)
+          .map((appointment) => appointment.patientId)
+          .filter(Boolean)
+      );
+      data = data.filter((patient) => patientIds.has(patient.id));
+    }
+
     setPatients(data);
     setFilteredPatients(data);
   };
@@ -57,7 +68,7 @@ const PatientList = ({ user }) => {
     { field: 'age', headerName: 'Age', width: 80, renderCell: (params) => calculateAge(params.row.dateOfBirth) },
     { field: 'dateOfBirth', headerName: 'Date of Birth', width: 130, renderCell: (params) => formatDate(params.value) },
     { field: 'registrationDate', headerName: 'Registered', width: 130, renderCell: (params) => formatDate(params.value) },
-    { field: 'password', headerName: 'Password', width: 120, renderCell: (params) => user?.role === 'admin' ? <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> : '***' },
+    ...(user?.role === 'admin' ? [{ field: 'password', headerName: 'Password', width: 120, renderCell: (params) => <Chip label={params.value || '***'} size="small" color="info" variant="outlined" /> }] : []),
     { field: 'medicalHistory', headerName: 'Medical Notes', flex: 1, minWidth: 150, renderCell: (params) => <Typography variant="body2" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{params.value || 'None'}</Typography> },
   { field: 'actions', type: 'actions', headerName: 'Actions', width: 140, getActions: (params) => {
       const actions = [];
@@ -89,7 +100,7 @@ const PatientList = ({ user }) => {
     <Box>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <TextField 
-          placeholder="Search patients..." 
+          placeholder={user?.role === 'doctor' ? 'Search my patients...' : 'Search patients...'} 
           value={searchQuery} 
           onChange={(e) => setSearchQuery(e.target.value)} 
           size="small" 
